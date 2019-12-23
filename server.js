@@ -20,6 +20,18 @@ db.on('error', function (err) {
   console.log('MongoDB Error: ', err);
 });
 
+var app = express();
+
+// 미들웨어
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
+  next();
+});
+
 // Server 설정
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
