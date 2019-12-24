@@ -14,12 +14,8 @@ Mongoose.connect( process.env.MONGO_DB_URL, {
   useUnifiedTopology: true 
 });
 var db = Mongoose.connection;
-db.once('open', function () {
-  console.log('Successfully connected to MongoDB!');
-});
-db.on('error', function (err) {
-  console.log('MongoDB Error: ', err);
-});
+db.once('open', function () { console.log('Successfully connected to MongoDB!'); });
+db.on('error', function (err) { console.log('MongoDB Error: ', err); });
 
 var app = Express();
 
@@ -28,7 +24,7 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({extended: true}));
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
   res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
   next();
 });
@@ -37,22 +33,20 @@ app.use(function (req, res, next) {
 app.use('/api/users', require('./api/users'));
 app.use('/api/auth', require('./api/auth')); 
 
-// 에러 핸들러 메소드
+// 로그, 에러 핸들러
 function logHandler(err, req, res, next) {
   console.error('[' + new Date() + ']\n' + err.stack);
   next(err);
 }
-
 function errorHandler(err, req, res, next) {
   res.status(err.status || 500);
   res.type('json').send(JSON.stringify({error: err || 'uncaught error !'}, null, 4));
 }
-
 app.use(logHandler);
 app.use(errorHandler);
 
 // server 설정
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
-  console.log('listening on port:' + port);
+  console.log('listening on port: ' + port);
 });

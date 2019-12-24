@@ -15,31 +15,29 @@ var Users = Express.Router();
 // });
 
 // 유저 생성
-Users.post('/', function(req, res, next){
+Users.post('/', createUser);
+
+// 토큰 값 + 이메일로 유저 조회
+Users.get('/:email', Util.isLoggedin, findUserByEmailAndToken);
+
+// 유저 삭제
+Users.delete('/:email', Util.isLoggedin, checkPermission, deleteUserByEmail);
+
+module.exports = Users;
+
+function createUser(req, res, next){
   var user = new User(req.body);
   user.save(function(err, user){
     err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg(user));
   });
-})
+}
 
-// 토큰 값 + 이메일로 유저 조회
-Users.get('/:email', Util.isLoggedin, function(req, res, next){
+function findUserByEmailAndToken(req, res, next){
   User.findOne({ email:req.params.email })
-  .exec(function(err, user){
-    err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg(user));
-  });
-});
-
-// 유저 삭제
-Users.delete('/:email', Util.isLoggedin, checkPermission, function(req, res, next){
-  User.findOneAndRemove({ email:req.params.email })
-  .exec(function(err, user){
-    // err 이고 user 없으면
-    err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': user.email + ' 가 삭제되었습니다 !'}));
-  });
-});
-
-module.exports = Users;
+      .exec(function(err, user){
+        err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg(user));
+      });
+}
 
 function checkPermission(req, res, next){
   console.error(req.user)
@@ -50,4 +48,12 @@ function checkPermission(req, res, next){
       return res.send('유저를 삭제할 권한이 없습니다.', 401);
     else next();
   });
+}
+
+function deleteUserByEmail(req, res, next){
+  User.findOneAndRemove({ email:req.params.email })
+      .exec(function(err, user){
+        // err 이고 user 없으면
+        err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': user.email + ' 가 삭제되었습니다 !'}));
+      });
 }
