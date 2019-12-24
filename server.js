@@ -23,6 +23,12 @@ db.on('error', function (err) {
 
 var app = express();
 
+// app.get('*', function(req, res, next) {
+//   var error = new Error('My Error occurred');
+//   error.status = 500;
+//   next(error);
+// });
+
 // app 미들웨어
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -32,19 +38,22 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
   next();
 });
+app.use(logHandler);
+app.use(errorHandler);
 
-function logErrors(err, req, res, next) {
-  console.error(err.stack);
+// 에러 핸들러 메소드
+function logHandler(err, req, res, next) {
+  console.error('[' + new Date() + ']\n' + err.stack);
   next(err);
 }
 
 function errorHandler(err, req, res, next) {
-  res.status(500);
-  res.render('error', { error: err });
+  res.status(err.status || 500);
+  res.type('json').send(JSON.stringify({error: err}, null, 4));
 }
 
-app.use(logErrors);
-app.use(errorHandler);
+// api 라우트 설정
+app.use('/api/users', require('./api/users')); 
 
 // server 설정
 var port = process.env.PORT || 3000;
