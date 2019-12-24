@@ -1,14 +1,24 @@
-var jwt = require('jsonwebtoken');
+var Jwt = require('jsonwebtoken');
+var Exception = require('../exceptions/exception')
 
-var util = {};
+var Util = {};
+
+Util.responseMsg = function(data){
+  return{
+    status: 200,
+    data: data
+  }
+}
 
 // 미들 웨어
-util.isLoggedin = function(req,res,next){
+Util.isLoggedin = function(req, res, next){
   var token = req.headers['x-access-token'];
-  if (!token) return res.send('token is required!');
+  if (!token) return res.send('token is required !');
   else {
-    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
-      if(err) return next(err)
+    Jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) { 
+      if (err) {
+        next(new Exception('Token invalid error !', 400));
+      }
       else {
         req.decoded = decoded;
         next();
@@ -17,4 +27,4 @@ util.isLoggedin = function(req,res,next){
   }
 };
 
-module.exports = util;
+module.exports = Util;

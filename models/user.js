@@ -1,14 +1,14 @@
-var crypto = require('crypto');
-var mongoose = require('mongoose')
+var Crypto = require('crypto');
+var Mongoose = require('mongoose')
 require('dotenv').config();
 
 // 해쉬 함수
 function hash(password){
-  return crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
+  return Crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
 }
 
 // 스키마
-var User = mongoose.Schema({
+var User = Mongoose.Schema({
   email:{
     type:String,
     required:[true,'Email is required!'],
@@ -55,4 +55,4 @@ User.methods.authenticatePassword = function(password) {
   return this.password === hashed_password;
 };
 
-module.exports = mongoose.model('User', User);
+module.exports = Mongoose.model('User', User);
