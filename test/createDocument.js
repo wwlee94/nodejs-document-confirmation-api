@@ -4,8 +4,8 @@ var Mongoose = require('mongoose');
 // MongoDB 설정
 Mongoose.Promise = global.Promise;
 Mongoose.connect( "mongodb+srv://nodejs:nodejs@cluster-nodejs-dnpk0.mongodb.net/test?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true 
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
 });
 var db = Mongoose.connection;
 db.once('open', function () { console.log('Successfully connected to MongoDB!'); });
@@ -23,6 +23,6 @@ db.once('open', function () { console.log('Successfully connected to MongoDB!');
 
 var doc = Document.find({user_email: 'wjdtjddus1109@naver.com'});
 doc.exec(function(err, doc){
-  // err 이고 user 없으면
-  err || !doc ? console.error(`Error : ${err}`) : console.log(doc);
+    // err 이고 user 없으면
+    err || !doc ? console.error(`Error : ${err}`) : console.log(doc);
 });
