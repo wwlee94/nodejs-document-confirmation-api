@@ -1,23 +1,22 @@
 var Express = require('express');
 var Jwt = require('jsonwebtoken');
 var User = require('../models/user');
+var Exception = require('../exceptions/exception')
 
 var Auth = Express.Router();
 
 // login
 Auth.post('/login',
   function (req, res, next){
-    var validationError = new Error('paramsValidationError');
-    validationError.status = 400;
-    validationError.message = ''
+    msg = 'paramInvalidError\n '
     if(!req.body.email){
-      validationError.message += 'Email is required !\n';
+      msg += 'Email is required !\n ';
     }
-    else if(!req.body.password){
-      validationError.message += 'Password is required !';
+    if(!req.body.password){
+      msg += 'Password is required ! ';
     }
 
-    if (validationError.message !== '') return next(validationError);
+    if (msg !== '') return next(new Exception(msg, 400));
     else next();
   },
   function(req, res, next){
@@ -26,7 +25,7 @@ Auth.post('/login',
     .exec(function(err, user){
       if(err) return next(err);
       else if(!user || !user.authenticatePassword(req.body.password))
-        return res.send('Email or Password is invalid');
+        return next(new Exception('Email or Password is invalid', 401));
       else {
         var payload = {
           _id : user._id,
@@ -35,7 +34,7 @@ Auth.post('/login',
         var options = { expiresIn: 60*60*24 };
         Jwt.sign(payload, process.env.JWT_SECRET, options, function(err, token){
           if(err) return next(err);
-          res.send(token);
+          res.send(Util.responseMsg(token));
         });
       }
     });

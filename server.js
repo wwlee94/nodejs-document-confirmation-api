@@ -40,7 +40,6 @@ app.use('/api/auth', require('./api/auth'));
 // 에러 핸들러 메소드
 function logHandler(err, req, res, next) {
   console.error('[' + new Date() + ']\n' + err.message);
-  console.error(err)
   next(err);
 }
 

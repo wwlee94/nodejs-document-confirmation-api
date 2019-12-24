@@ -13,11 +13,11 @@ Util.responseMsg = function(data){
 // 미들 웨어
 Util.isLoggedin = function(req, res, next){
   var token = req.headers['x-access-token'];
-  if (!token) return res.send('token is required !');
+  if (!token) return next(new Exception('token is required !', 400))
   else {
     Jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) { 
       if (err) {
-        next(new Exception('Token invalid error !', 400));
+        next(new Exception('Token invalid error !', 401));
       }
       else {
         req.decoded = decoded;
