@@ -1,5 +1,5 @@
 var Crypto = require('crypto');
-var Mongoose = require('mongoose')
+var Mongoose = require('mongoose');
 require('dotenv').config();
 
 // 해쉬 함수
@@ -21,7 +21,7 @@ var User = Mongoose.Schema({
     required:[true, '패스워드를 입력해주세요 !'],
     select:false
   }
-  });
+});
 
 // virtuals
 User.virtual('passwordConfirm')

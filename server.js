@@ -32,6 +32,7 @@ app.use(function (req, res, next) {
 // api 라우트 설정
 app.use('/api/users', require('./api/users'));
 app.use('/api/auth', require('./api/auth')); 
+app.use('/api/documents', require('./api/documents'));
 
 // 로그, 에러 핸들러
 function logHandler(err, req, res, next) {

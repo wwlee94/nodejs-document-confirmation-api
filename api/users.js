@@ -1,18 +1,12 @@
 var Express = require('express');
 var User = require('../models/user');
 var Util = require('../utils/util');
-var Exception = require('../exceptions/exception')
+var Exception = require('../exceptions/exception');
 
 var Users = Express.Router();
 
-// //index
-// Users.get('/', Util.isLoggedin, function(req, res, next){
-//   User.find({})
-//   .sort({ email: 1 })
-//   .exec(function(err, users){
-//     err || !users ? next(new Exception(err, 400)) : res.send(Util.responseMsg(users));
-//   });
-// });
+//index
+Users.get('/', Util.isLoggedin, findAllOrderByEmail);
 
 // 유저 생성
 Users.post('/', createUser);
@@ -24,6 +18,14 @@ Users.get('/:email', Util.isLoggedin, findUserByEmailAndToken);
 Users.delete('/:email', Util.isLoggedin, checkPermission, deleteUserByEmail);
 
 module.exports = Users;
+
+function findAllOrderByEmail(req, res, next){
+  User.find({})
+  .sort({ email: 1 })
+  .exec(function(err, users){
+    err || !users ? next(new Exception(err, 400)) : res.send(Util.responseMsg(users));
+  });
+}
 
 function createUser(req, res, next){
   var user = new User(req.body);
@@ -54,6 +56,6 @@ function deleteUserByEmail(req, res, next){
   User.findOneAndRemove({ email:req.params.email })
       .exec(function(err, user){
         // err 이고 user 없으면
-        err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': user.email + ' 가 삭제되었습니다 !'}));
+        err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': `${user.email} 가 삭제되었습니다 !`}));
       });
 }
