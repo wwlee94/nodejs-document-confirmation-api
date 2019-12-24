@@ -17,10 +17,10 @@ Auth.post('/login',
     }
     msg = ''
     if(!req.body.email){
-      msg += 'Email is required !\n ';
+      msg += '이메일을 입력해주세요 !\n ';
     }
     if(!req.body.password){
-      msg += 'Password is required ! ';
+      msg += '패스워드를 입력해주세요 ! ';
     }
     error['errors']['log'] = msg
     if (msg !== '') return next(new Exception(error, 400));
@@ -32,7 +32,7 @@ Auth.post('/login',
     .exec(function(err, user){
       if(err) return next(new Exception(err, 500));
       else if(!user || !user.authenticatePassword(req.body.password))
-        return next(new Exception('Email or Password is invalid', 401));
+        return next(new Exception('이메일 혹은 패스워드가 틀렸습니다. 다시 입력해주세요 !', 401));
       else {
         var payload = {
           _id : user._id,

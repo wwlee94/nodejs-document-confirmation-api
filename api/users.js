@@ -14,7 +14,7 @@ var Users = Express.Router();
 //   });
 // });
 
-//crete
+// 유저 생성
 Users.post('/', function(req, res, next){
   var user = new User(req.body);
   user.save(function(err, user){
@@ -22,7 +22,7 @@ Users.post('/', function(req, res, next){
   });
 })
 
-// show
+// 토큰 값 + 이메일로 유저 조회
 Users.get('/:email', Util.isLoggedin, function(req, res, next){
   User.findOne({ email:req.params.email })
   .exec(function(err, user){
@@ -30,23 +30,24 @@ Users.get('/:email', Util.isLoggedin, function(req, res, next){
   });
 });
 
-// destroy
+// 유저 삭제
 Users.delete('/:email', Util.isLoggedin, checkPermission, function(req, res, next){
   User.findOneAndRemove({ email:req.params.email })
   .exec(function(err, user){
     // err 이고 user 없으면
-    err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': user.email + ' delete success !'}));
+    err || !user ? next(new Exception(err, 400)) : res.send(Util.responseMsg({ 'user': user, 'message': user.email + ' 가 삭제되었습니다 !'}));
   });
 });
 
 module.exports = Users;
 
 function checkPermission(req, res, next){
+  console.error(req.user)
   User.findOne({ email: req.params.email }, function(err, user){
     if(err) return next(new Exception(err, 400));
-    else if (!user) return next(new Exception('Not found data !', 400));
-    else if (!req.decoded || user._id != req.decoded._id) 
-      return res.send('You don\'t have permission', 401);
+    else if (!user) return next(new Exception('user를 찾을 수 없습니다.', 400));
+    else if (!req.user || user._id != req.user._id) 
+      return res.send('유저를 삭제할 권한이 없습니다.', 401);
     else next();
   });
 }

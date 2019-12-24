@@ -11,33 +11,33 @@ function hash(password){
 var User = Mongoose.Schema({
   email:{
     type:String,
-    required:[true, 'Email is required!'],
-    match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Should be a vaild email address!'],
+    required:[true, '이메일을 입력해주세요 !'],
+    match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, '이메일 주소여야 합니다 ! (ex: nodejs@gmail.com)'],
     trim:true,
     unique:true
   },
   password:{
     type:String,
-    required:[true, 'Password is required!'],
+    required:[true, '패스워드를 입력해주세요 !'],
     select:false
   }
   });
 
 // virtuals
-User.virtual('passwordConfirmation')
-    .get(function(){ return this._passwordConfirmation; })
-    .set(function(value){ this._passwordConfirmation=value; });
+User.virtual('passwordConfirm')
+    .get(function(){ return this._passwordConfirm; })
+    .set(function(value){ this._passwordConfirm=value; });
 
 User.path('password').validate(function(v) {
   var user = this;
 
   if(user.isNew){
     if(!user.passwordConfirmation){
-      user.invalidate('passwordConfirmation', 'Password Confirmation is required!');
+      user.invalidate('_passwordConfirm', '패스워드 확인이 필요합니다 !');
     }
     else {
       if(user.password !== user.passwordConfirmation) {
-        user.invalidate('passwordConfirmation', 'Password Confirmation does not matched!');
+        user.invalidate('_passwordConfirm', '입력한 패스워드와 패스워드 확인이 일치 하지 않습니다 !');
       }
     }
   }
