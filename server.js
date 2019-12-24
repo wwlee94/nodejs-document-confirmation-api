@@ -39,13 +39,13 @@ app.use('/api/auth', require('./api/auth'));
 
 // 에러 핸들러 메소드
 function logHandler(err, req, res, next) {
-  console.error('[' + new Date() + ']\n' + err.message);
+  console.error('[' + new Date() + ']\n' + err.stack);
   next(err);
 }
 
 function errorHandler(err, req, res, next) {
   res.status(err.status || 500);
-  res.type('json').send(JSON.stringify({error: err}, null, 4));
+  res.type('json').send(JSON.stringify({error: err || 'uncaught error !'}, null, 4));
 }
 
 app.use(logHandler);

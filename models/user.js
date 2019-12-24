@@ -11,17 +11,22 @@ function hash(password){
 var User = Mongoose.Schema({
   email:{
     type:String,
-    required:[true,'Email is required!'],
-    match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,'Should be a vaild email address!'],
+    required:[true, 'Email is required!'],
+    match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Should be a vaild email address!'],
     trim:true,
     unique:true
   },
   password:{
     type:String,
-    required:[true,'Password is required!'],
+    required:[true, 'Password is required!'],
     select:false
   }
   });
+
+// virtuals
+User.virtual('passwordConfirmation')
+    .get(function(){ return this._passwordConfirmation; })
+    .set(function(value){ this._passwordConfirmation=value; });
 
 User.path('password').validate(function(v) {
   var user = this;

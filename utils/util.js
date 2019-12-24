@@ -5,12 +5,11 @@ var Util = {};
 
 Util.responseMsg = function(data){
   return{
-    status: 200,
+    statusCode: 200,
     data: data
   }
 }
 
-// 미들 웨어
 Util.isLoggedin = function(req, res, next){
   var token = req.headers['x-access-token'];
   if (!token) return next(new Exception('token is required !', 400))
