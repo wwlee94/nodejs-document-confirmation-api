@@ -19,10 +19,10 @@ module.exports = Users;
 function findUserByEmail(req, res, next){
     msg = '';
     if (!req.query.email) msg += '이메일을 입력해주세요 !';
-    if (msg !== '') return next(new Exception(msg, 400));
+    if (msg !== '') return next(new Exception.NotFoundParameterError(msg));
     User.findOne({ email: req.query.email })
         .exec(function(err, user){
-            if (err) return next(new Exception(err.message, 400));
+            if (err) return next(new Exception.Base(err.message, 400));
             response = user ? user : '검색된 데이터가 없습니다.';
             res.send(Util.responseMsg(response));
         });
@@ -31,18 +31,16 @@ function findUserByEmail(req, res, next){
 function createUser(req, res, next){
     var user = new User(req.body);
     user.save(function(err, user){
-        if (err) return next(new Exception(err.message, 400));
-        response = user ? user : '검색된 데이터가 없습니다.';
-        res.send(Util.responseMsg(response));
+        if (err) return next(new Exception.Base(err.message, 400));
+        res.send(Util.responseMsg(user));
     });
 }
 
 function checkPermission(req, res, next){
     User.findOne({ email: req.params.email }, function(err, user){
-        if(err) return next(new Exception(err.message, 400));
-        else if (!user) return next(new Exception('user를 찾을 수 없습니다.', 400));
-        else if (!req.user || user._id != req.user._id) 
-        return res.send('유저를 삭제할 권한이 없습니다.', 401);
+        if(err) return next(new Exception.Base(err.message, 400));
+        else if (!req.user || user._id != req.user._id) return next(new Exception.Forbidden('유저를 삭제할 권한이 없습니다.'));
+        else if (!user) return next(new Exception.NotFoundDataError(`'${req.user.email}' 사용자를 찾을 수 없습니다.`));
         else next();
     });
 }
@@ -50,7 +48,7 @@ function checkPermission(req, res, next){
 function deleteUserByEmail(req, res, next){
     User.findOneAndRemove({ email: req.query.email })
         .exec(function(err, user){
-            if (err) return next(new Exception(err.message, 400));
+            if (err) return next(new Exception.Base(err.message, 400));
             response = user ? { 'user': user, 'message': `${user.email} 가 삭제되었습니다 !`} : '검색된 데이터가 없습니다.';
             res.send(Util.responseMsg(response));
         });
