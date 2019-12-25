@@ -24,10 +24,10 @@ var Document = Mongoose.Schema({
         enum: ['RUNNING', 'APPROVED', 'CANCELED'],
         default: 'RUNNING' 
     },
-    approval_user: {
+    confirmed_user: {
         type: [String]
     },
-    approval_order: {
+    confirmation_order: {
         type: [String],
         required: [true, '결제자 순서를 입력해주세요 !']
     }
