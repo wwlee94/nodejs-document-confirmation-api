@@ -5,12 +5,14 @@ var Document = Mongoose.Schema({
     user_email: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true
     },
     title: {
         type: String,
         required: [true, '제목을 입력해주세요 !'],
-        trim: true
+        trim: true,
+        unique: true
     },
     content: {
         type: String,

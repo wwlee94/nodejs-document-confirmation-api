@@ -13,14 +13,8 @@ module.exports = Auth;
 
 function checkValidation(req, res, next){
     console.log('Check Email, Password Validation ...')
-    msg = ''
-    if(!req.body.email){
-        msg += '이메일을 입력해주세요 !\n ';
-    }
-    if(!req.body.password){
-        msg += '패스워드를 입력해주세요 ! ';
-    }
-    if (msg !== '') return next(new Exception.NotFoundParameterError(msg));
+    if(!req.body.email) return next(new Exception.NotFoundParameterError('이메일을 입력해주세요 !'));
+    if(!req.body.password) return next(new Exception.NotFoundParameterError('패스워드를 입력해주세요 !'));
     else next();
 }
 
@@ -36,7 +30,7 @@ function signIn(req, res, next){
                     _id : user._id,
                     email: user.email
                 };
-                var options = { expiresIn: 60*60*24 };
+                var options = { expiresIn: 60 * 60 };
                 Jwt.sign(payload, process.env.JWT_SECRET, options, function(err, token){
                     if(err) return next(new Exception.ExceptionError(err.message));
                     res.send(Util.responseMsg({ 'token': token }));

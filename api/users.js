@@ -7,10 +7,8 @@ var Users = Express.Router();
 
 // 이메일로 유저 조회
 Users.get('/', Util.isLoggedin, findUserByEmail);
-
 // 유저 생성
 Users.post('/', createUser);
-
 // 유저 삭제
 Users.delete('/', Util.isLoggedin, checkPermission, deleteUserByEmail);
 

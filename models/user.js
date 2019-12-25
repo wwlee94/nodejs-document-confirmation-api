@@ -2,11 +2,6 @@ var Crypto = require('crypto');
 var Mongoose = require('mongoose');
 require('dotenv').config();
 
-// 해쉬 함수
-function hash(password){
-    return Crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
-}
-
 // 스키마
 var User = Mongoose.Schema({
     email:{
@@ -33,12 +28,12 @@ User.path('password').validate(function(v) {
 
     if(user.isNew){
         if(!user.passwordConfirm){
-        user.invalidate('_passwordConfirm', '패스워드 확인이 필요합니다 !');
+            user.invalidate('_passwordConfirm', '패스워드 확인이 필요합니다 !');
         }
         else {
-        if(user.password !== user.passwordConfirm) {
-            user.invalidate('_passwordConfirm', '입력한 패스워드와 패스워드 확인이 일치 하지 않습니다 !');
-        }
+            if(user.password !== user.passwordConfirm) {
+                user.invalidate('_passwordConfirm', '입력한 패스워드와 패스워드 확인이 일치 하지 않습니다 !');
+            }
         }
     }
 });
@@ -53,6 +48,11 @@ User.pre('save', function (next){
     user.password = hash(user.password);
     return next();
 });
+
+// 해쉬 함수
+function hash(password){
+    return Crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
+}
 
 User.methods.authenticatePassword = function(password) {
     // 함수로 전달받은 password 의 해시값과, 데이터에 담겨있는 해시값과 비교를 합니다.

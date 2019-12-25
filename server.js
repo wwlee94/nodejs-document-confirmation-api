@@ -43,7 +43,7 @@ function logHandler(err, req, res, next) {
 }
 function errorHandler(err, req, res, next) {
     res.status(err.status || 500);
-    res.type('json').send(JSON.stringify({error: err || 'uncaught error !'}, null, 4));
+    res.type('json').send(JSON.stringify({error: err || 'Uncaught Error !'}, null, 4));
 }
 app.use(logHandler);
 app.use(errorHandler);
