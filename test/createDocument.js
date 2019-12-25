@@ -21,7 +21,7 @@ db.once('open', function () { console.log('Successfully connected to MongoDB!');
 //   err || !doc ? console.error(`Error : ${err}`) : console.log(doc);
 // });
 
-var doc = Document.find({user_email: 'wjdtjddus1109@naver.com'});
+var doc = Document.find({userEmail: 'wjdtjddus1109@naver.com'});
 doc.exec(function(err, doc){
     // err 이고 user 없으면
     err || !doc ? console.error(`Error : ${err}`) : console.log(doc);

@@ -7,7 +7,9 @@ var Document = require('../models/document');
 var Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
-Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation)
+
+Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation);
+
 Documents.post('/', Util.isLoggedin, createDocuments);
 
 module.exports = Documents;
@@ -29,29 +31,30 @@ function findDocuments(req, res, next){
     if (type && typeList.includes(type)){
         if (type === 'OUTBOX'){
             console.error('OUTBOX');
-            findDocumentsBy({ user_email: email, type: 'RUNNING' }, res);
+            findDocumentsBy({ userEmail: email, type: 'RUNNING' }, res);
         }
         else if (type === 'INBOX'){
             console.error('INBOX');
-            findDocumentsBy({ confirmation_order: email, type: 'RUNNING' }, res);
+            findDocumentsBy({ confirmationOrder: email, type: 'RUNNING' }, res);
         }
         else {
             //내가 관여한 문서중 결재가 완료된 문서 -> (내가 생성한 문서이거나 결재 지목을 받은 문서)를 관여한 문서라고 정의했습니다.
             console.error('ARCHIVE');
-            findDocumentsBy({ $or: [{user_email: email}, {confirmation_order: email}], type: {$in: ['APPROVED', 'CANCELED']}}, res);
+            findDocumentsBy({ $or: [{userEmail: email}, {confirmationOrder: email}], type: {$in: ['APPROVED', 'CANCELED']}}, res);
         } 
     }
     else if (type && !typeList.includes(type)) return next(new Exception.InvalidParameterError("type은 ['OUTBOX', 'INBOX', 'ARCHIVE'] 중 하나를 가집니다."));
     else {
         console.error('default');
-        findDocumentsBy({ user_email: req.query.email }, res);
+        findDocumentsBy({ userEmail: req.query.email }, res);
     }
 }
 
 // email query 파라미터로 documents 찾아주는 함수
 function findDocumentsBy(params, res){
     Document.find(params)
-            .select('user_email title type confirmation_order')
+            .populate('Confirmation')
+            .select('userEmail title type confirmationOrder confirmedUsers')
             .exec(function(err, doc){
                 if (err) return next(new Exception.ExceptionError(err.message));
                 response = doc ? doc : '검색된 데이터가 없습니다.';
@@ -61,6 +64,7 @@ function findDocumentsBy(params, res){
 
 // 문서의 세부 정보를 찾아주는 함수
 function findDocumentsAndConfirmation(req, res, next){
+
     res.send('id는? '+req.params.id);
 }
 
@@ -83,15 +87,15 @@ function createDocuments(req, res, next){
             .exec(function(err, user){
                 if (err) return next(new Exception.ExceptionError(err.message, err.status));
                 if (user && emailList.length !== user.length) {
-                    user_email = user.map(x => x['email']);
-                    invalidEmailList = emailList.filter(x => !user_email.includes(x));
+                    userEmail = user.map(x => x['email']);
+                    invalidEmailList = emailList.filter(x => !userEmail.includes(x));
                     return next(new Exception.InvalidParameterError(`존재하지 않는 이메일입니다.\n [${invalidEmailList.join(', ')}]`));
                 }
                 params = {
-                    "user_email" : req.body.email,
+                    "userEmail" : req.body.email,
                     "title" : req.body.title,
                     "content" : req.body.content,
-                    "confirmation_order" : emailList
+                    "confirmationOrder" : emailList
                 };
                 var document = new Document(params);
                 document.save(function(err, document){

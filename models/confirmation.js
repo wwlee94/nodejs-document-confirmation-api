@@ -2,11 +2,12 @@ var Mongoose = require('mongoose');
 
 // 스키마
 var Confirmation = Mongoose.Schema({
-    document_id: {
+    document: {
         type: Mongoose.Schema.Types.ObjectId,
+        ref: 'Document',
         required: [true, '결재할 문서 id를 입력해주세요 !']
     },
-    user_email: {
+    userEmail: {
         type: String,
         required: [true, '문서를 결재할 사용자 이메일을 입력해주세요 !'],
         trim: true

@@ -2,7 +2,7 @@ var Mongoose = require('mongoose');
 
 // 스키마
 var Document = Mongoose.Schema({
-    user_email: {
+    userEmail: {
         type: String,
         required: true,
         trim: true
@@ -24,21 +24,25 @@ var Document = Mongoose.Schema({
         enum: ['RUNNING', 'APPROVED', 'CANCELED'],
         default: 'RUNNING' 
     },
-    confirmed_user: {
-        type: [String]
-    },
-    confirmation_order: {
+    confirmationOrder: {
         type: [String],
         required: [true, '결제자 순서를 입력해주세요 !'],
         validate: [minArraySize, '최소 1명 이상의 결재자를 입력해주세요.']
+    },
+    confirmedUsers: {
+        type: [String]
     }
+    // confirmedUsers: [{
+    //     type: Mongoose.Schema.Types.ObjectId,
+    //     ref: 'Confirmation'
+    // }],
 },
 {
     versionKey: false,
     timestamps: true
 });
 
-Document.index({ title: 1, user_email: 1}, { unique: true });
+Document.index({ title: 1, userEmail: 1}, { unique: true });
 
 module.exports = Mongoose.model('Document', Document);
 
