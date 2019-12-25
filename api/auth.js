@@ -30,6 +30,7 @@ function signIn(req, res, next){
                     _id : user._id,
                     email: user.email
                 };
+                // Jwt 토큰 유효기간 로그인 후 1시간
                 var options = { expiresIn: 60 * 60 };
                 Jwt.sign(payload, process.env.JWT_SECRET, options, function(err, token){
                     if(err) return next(new Exception.ExceptionError(err.message));

@@ -16,6 +16,10 @@ var User = Mongoose.Schema({
         required:[true, '패스워드를 입력해주세요 !'],
         select:false
     }
+},
+{
+    versionKey: false,
+    timestamps: true
 });
 
 // virtuals

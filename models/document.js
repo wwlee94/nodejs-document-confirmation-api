@@ -5,14 +5,12 @@ var Document = Mongoose.Schema({
     user_email: {
         type: String,
         required: true,
-        trim: true,
-        unique: true
+        trim: true
     },
     title: {
         type: String,
         required: [true, '제목을 입력해주세요 !'],
-        trim: true,
-        unique: true
+        trim: true
     },
     content: {
         type: String,
@@ -34,9 +32,13 @@ var Document = Mongoose.Schema({
         required: [true, '결제자 순서를 입력해주세요 !'],
         validate: [minArraySize, '최소 1명 이상의 결재자를 입력해주세요.']
     }
+},
+{
+    versionKey: false,
+    timestamps: true
 });
 
-Document.index({user_email: 1});
+Document.index({ title: 1, user_email: 1}, { unique: true });
 
 module.exports = Mongoose.model('Document', Document);
 
