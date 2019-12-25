@@ -8,6 +8,14 @@ class Base extends Error {
     }
 };
 
+class ExceptionError extends Base {
+    constructor (message, status) {
+        super();
+        this.status = status || 400;
+        this.message = message || 'Uncaught Error !';
+    }
+};
+
 class Forbidden extends Base {
     constructor (message, status) { 
         super();
@@ -58,6 +66,7 @@ class InvalidParameterError extends Base {
 
 module.exports = {
     Base,
+    ExceptionError,
     Forbidden,
     NotFoundTokenError,
     NotFoundParameterError,

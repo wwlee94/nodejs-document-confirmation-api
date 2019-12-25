@@ -29,10 +29,15 @@ var Document = Mongoose.Schema({
     },
     confirmation_order: {
         type: [String],
-        required: [true, '결제자 순서를 입력해주세요 !']
+        required: [true, '결제자 순서를 입력해주세요 !'],
+        validate: [minArraySize, '최소 1명 이상의 결재자를 입력해주세요.']
     }
 });
 
 Document.index({user_email: 1});
 
 module.exports = Mongoose.model('Document', Document);
+
+function minArraySize(val) {
+    return val.length >= 1;
+  }

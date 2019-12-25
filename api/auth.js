@@ -29,7 +29,7 @@ function signIn(req, res, next){
     User.findOne({ email: req.body.email })
         .select({ email:1, password:1 })
         .exec(function(err, user){
-            if(err) return next(new Exception.Base(err.message, 500));
+            if(err) return next(new Exception.ExceptionError(err.message));
             else if(!user || !user.authenticatePassword(req.body.password)) return next(new Exception.Forbidden('이메일 혹은 패스워드가 틀렸습니다. 다시 입력해주세요 !'));
             else {
                 var payload = {
@@ -38,7 +38,7 @@ function signIn(req, res, next){
                 };
                 var options = { expiresIn: 60*60*24 };
                 Jwt.sign(payload, process.env.JWT_SECRET, options, function(err, token){
-                    if(err) return next(new Exception.Base(err, 400));
+                    if(err) return next(new Exception.ExceptionError(err.message));
                     res.send(Util.responseMsg({ 'token': token }));
                     console.log('Success sign in !');
                 });

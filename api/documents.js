@@ -1,7 +1,9 @@
 var Express = require('express');
-var Document = require('../models/document');
 var Util = require('../utils/util');
 var Exception = require('../exceptions/exception');
+
+var User = require('../models/user')
+var Document = require('../models/document');
 
 var Documents = Express.Router();
 
@@ -9,8 +11,45 @@ Documents.get('/', Util.isLoggedin, findDocuments);
 
 Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation)
 
-// 결재 서류 추가
-// Documents.post('/', Util.isLoggedin)
+Documents.post('/', Util.isLoggedin, function(req, res, next){
+
+    // 파라미터 검증
+    msg = ''
+    if (!req.body.email) msg += '이메일을 입력해주세요 !\n ';
+    if (!req.body.title) msg += '제목을 입력해주세요 !\n ';
+    if (!req.body.content) msg += '내용을 입력해주세요 !\n ';
+    if (!req.body.order) msg += '결재 순서를 입력해주세요 !';
+    if (msg !== '') return next(new Exception.InvalidParameterError(msg));
+
+    // 토큰 검증
+    if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다.'));
+
+    //결재 요청한 email 검증 - 함수로 뺄지 고민
+    emailList = req.body.order.split(',').map(x => x.trim());
+    if (emailList.length >= 1){
+        User.find({email: {$in : emailList}}).exec(function(err, user){
+            if (err) return next(new Exception.ExceptionError(err.message, err.status));
+            if (user && emailList.length !== user.length) {
+                user_email = user.map(x => x['email']);
+                invalidEmailList = emailList.filter(x => !user_email.includes(x));
+                return next(new Exception.InvalidParameterError(`존재하지 않는 이메일입니다. ${invalidEmailList}`));
+            }
+        });
+    
+        params = {
+            "user_email" : req.body.email,
+            "title" : req.body.title,
+            "content" : req.body.content,
+            "confirmation_order" : emailList || []
+        };
+        var document = new Document(params);
+        document.save(function(err, document){
+            if (err) return next(new Exception.ExceptionError(err.message, 400));
+            res.send(Util.responseMsg(`${document.title} 결재 서류를 생성했습니다 !`));
+        });
+    }
+    else return next(new Exception.InvalidParameterError('최소 1명 이상의 결재자를 입력해주세요.'));
+});
 
 module.exports = Documents;
 
@@ -55,7 +94,7 @@ function findDocumentsBy(params, res){
     Document.find(params)
             .select('user_email title type confirmation_order')
             .exec(function(err, doc){
-                if (err) return next(new Exception.Base(err.message, 400));
+                if (err) return next(new Exception.ExceptionError(err.message));
                 response = doc ? doc : '검색된 데이터가 없습니다.';
                 res.send(Util.responseMsg(response));
             });
