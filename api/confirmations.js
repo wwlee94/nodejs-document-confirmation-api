@@ -40,7 +40,7 @@ Confirmations.post('/', Util.isLoggedin, function(req, res, next){
             doc = result[0].document;
             title = doc.title;
             confirmationOrder = doc.confirmationOrder.filter(x => !doc.confirmedUsers.includes(x));
-            if (confirmationOrder[0] !== email) return next(new Exception.ExceptionError('해당 사용자는 결재 차례가 아닙니다 !'));
+            if (confirmationOrder[0] !== email) return next(new Exception.ExceptionError(`해당 사용자는 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`));
      
             Document.update({ _id: docId }, { $push: { confirmedUsers: email }})
                 .catch((err) => { return next(new Exception.ExceptionError(err.message)); });
