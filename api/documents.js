@@ -7,7 +7,7 @@ var Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
 
-Documents.get('/:id', Util.isLoggedin, findDocumentsAndComirmation)
+Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation)
 
 module.exports = Documents;
 
@@ -35,6 +35,7 @@ function findDocuments(req, res, next){
             findDocumentsBy({ confirmation_order: email, type: 'RUNNING' }, res);
         }
         else {
+            //내가 관여한 문서중 결재가 완료된 문서 -> (내가 생성한 문서이거나 결재 지목을 받은 문서)를 관여한 문서라고 정의했습니다.
             console.error('ARCHIVE');
             findDocumentsBy({ $or: [{user_email: email}, {confirmation_order: email}], type: {$in: ['APPROVED', 'CANCELED']}}, res);
         } 
@@ -58,6 +59,6 @@ function findDocumentsBy(params, res){
 }
 
 // 문서의 세부 정보를 찾아주는 함수
-function findDocumentsAndComirmation(){
-
+function findDocumentsAndConfirmation(req, res, next){
+    res.send('id는? '+req.params.id);
 }

@@ -13,6 +13,7 @@ Mongoose.connect( process.env.MONGO_DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true 
 });
+Mongoose.set('debug', true);
 var db = Mongoose.connection;
 db.once('open', function () { console.log('Successfully connected to MongoDB!'); });
 db.on('error', function (err) { console.log('MongoDB Error: ', err); });
@@ -33,6 +34,7 @@ app.use(function (req, res, next) {
 app.use('/api/users', require('./api/users'));
 app.use('/api/auth', require('./api/auth')); 
 app.use('/api/documents', require('./api/documents'));
+app.use('/api/confirmations', require('./api/confirmations'));
 
 // 로그, 에러 핸들러
 function logHandler(err, req, res, next) {

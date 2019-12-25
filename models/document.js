@@ -33,6 +33,6 @@ var Document = Mongoose.Schema({
     }
 });
 
-Document.index({user_email: 1})
+Document.index({user_email: 1});
 
 module.exports = Mongoose.model('Document', Document);
