@@ -53,11 +53,10 @@ function findDocuments(req, res, next){
 // email query 파라미터로 documents 찾아주는 함수
 function findDocumentsBy(params, res){
     Document.find(params)
-            .populate('Confirmation')
             .select('userEmail title type confirmationOrder confirmedUsers')
             .exec(function(err, doc){
                 if (err) return next(new Exception.ExceptionError(err.message));
-                response = doc ? doc : '검색된 데이터가 없습니다.';
+                response = doc[0] ? doc : '검색된 데이터가 없습니다.';
                 res.send(Util.responseMsg(response));
             });
 }

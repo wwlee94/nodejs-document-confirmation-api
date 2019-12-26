@@ -12,7 +12,7 @@ Confirmations.get('/', Util.isLoggedin, function(req, res, next){
         res.send(data);
     });
 });
-Confirmations.post('/', Util.isLoggedin, validateParamsAndToken, validateDocument);
+Confirmations.post('/', Util.isLoggedin, validateParamsAndToken, confirmationRunner);
 
 module.exports = Confirmations;
 
@@ -33,31 +33,52 @@ function validateParamsAndToken(req, res, next){
     if (confirm && !confirmationList.includes(req.body.confirmation)) return next(new Exception.InvalidParameterError("confirmation 값은 ['APPROVED', 'CANCELED'] 중 하나를 가집니다 !"));
     next();
 };
+// 결재 서류 ID 검증 및 confirm 가능한 문서인지 검증
+// function validateDocumentIDAndConfirm(req, res, next){
+//     Document.find({ '_id': req.body.id })
+//         .then((result) => {
+//             if (!result.length) throw new Exception.InvalidParameterError('유효하지 않은 결재 서류 ID 입니다 !');
+//             if (result[0].type !== 'RUNNING') throw new Exception.InvalidParameterError('진행 중인 결재 서류만 컨펌이 가능합니다.');
+//         })
+//         .catch((err) => {
+//             if (err instanceof Exception.ExceptionError) return next(err);
+//             return next(new Exception.ExceptionError(err.message));
+//         });
+//     next();
+// }
 
-// 결재 서류 검증
-function validateDocument(req, res, next){
+// 
+function confirmationRunner(req, res, next){
 
-    Confirmation.find({ 'document': req.body.id }).populate('document', 'title type confirmationOrder confirmedUsers').select('document')
-        .then((result) => validateDocumentIdAndConfirm(result, req, res))
+    Document.find({ '_id': req.body.id })
+        .then((result) => updateConfirmedUserOrType(result, req, res))
         .then((result) => createConfirmation(result, req, res))
         .catch((err) => {
             if (err instanceof Exception.ExceptionError) return next(err);
             return next(new Exception.ExceptionError(err.message));
         });
+    // Confirmation.find({ 'document': req.body.id }).populate('document', 'title type confirmationOrder confirmedUsers').select('document')
+    //     .then((result) => updateConfirmUserOrType(result, req, res))
+    //     .then((result) => createConfirmation(result, req, res))
+    //     .catch((err) => {
+    //         if (err instanceof Exception.ExceptionError) return next(err);
+    //         return next(new Exception.ExceptionError(err.message));
+    //     });
 };
 
-// 결재 서류 ID 검증 및 confirm 가능한 문서인지 검증
-function validateDocumentIdAndConfirm(result, req, res){
+// 결재 서류 ID 검증 및 confirm 가능한 문서인지 검증 후 업데이트
+function updateConfirmedUserOrType(result, req, res){
 
-    doc = result[0].document;
-    title = doc.title;
-    type = doc.type;
+    title = result[0].title;
+    order = result[0].confirmationOrder;
+    users = result[0].confirmedUsers;
 
     if (!result.length) throw new Exception.InvalidParameterError('유효하지 않은 결재 서류 ID 입니다 !');
-    if (type !== 'RUNNING') throw new Exception.InvalidParameterError('진행 중인 결재 서류만 컨펌이 가능합니다.');
+    if (result[0].type !== 'RUNNING') throw new Exception.InvalidParameterError('진행 중인 결재 서류만 컨펌이 가능합니다.');
 
-    confirmationOrder = doc.confirmationOrder.filter(x => !doc.confirmedUsers.includes(x));
-    if (confirmationOrder.length > 0 && confirmationOrder[0] !== req.body.email) throw new Exception.ExceptionError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
+    confirmationOrder = order.filter(x => !users.includes(x));
+    if (confirmationOrder.length > 0 && order[0] !== req.body.email) throw new Exception.ExceptionError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
+
     if (req.body.confirmation === 'APPROVED'){
         if (confirmationOrder.length === 1) 
             return Document.updateOne({ _id: req.body.id }, { $push: { confirmedUsers: req.body.email }, $set: { type: 'APPROVED' }});
@@ -80,6 +101,7 @@ function createConfirmation(result, req, res){
     var confirmation = new Confirmation(params);
     return confirmation.save()
             .then((result) => {
-                res.send(Util.responseMsg(`['${title}'] 문서를 결재했습니다.`));
+                confirm = params.confirmation === 'APPROVED' ? '승인' : '취소'; 
+                res.send(Util.responseMsg(`'${params.userEmail}'님이 ['${title}'] 문서를 ${confirm}했습니다.`));
             });
 };
