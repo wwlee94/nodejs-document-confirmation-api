@@ -7,14 +7,22 @@ var Exception = require('../exceptions/exception');
 var Confirmations = Express.Router();
 var title = '';
 
-Confirmations.get('/', Util.isLoggedin, function(req, res, next){
-    Confirmation.find().populate('document', 'userEmail title').exec((err, data) => {
-        res.send(data);
-    });
-});
+Confirmations.get('/', Util.isLoggedin, findConfirmationByEmail);
 Confirmations.post('/', Util.isLoggedin, validateParamsAndToken, confirmationRunner);
 
 module.exports = Confirmations;
+
+// 결재 서류에 관여한 confirmation 검색
+function findConfirmationByEmail(req, res, next){
+    Confirmation.find({ 'userEmail': req.query.email }).populate('document', 'title type').select('comment confirmation createdAt')
+        .then((result) => {
+            res.send(Util.responseMsg(result));
+        })
+        .catch((err) => {
+            if (err instanceof Exception.ExceptionError) return next(err);
+            return next(new Exception.ExceptionError(err.message));
+        });
+}
 
 // 파라미터 & 토큰 검증
 function validateParamsAndToken(req, res, next){
@@ -33,21 +41,8 @@ function validateParamsAndToken(req, res, next){
     if (confirm && !confirmationList.includes(req.body.confirmation)) return next(new Exception.InvalidParameterError("confirmation 값은 ['APPROVED', 'CANCELED'] 중 하나를 가집니다 !"));
     next();
 };
-// 결재 서류 ID 검증 및 confirm 가능한 문서인지 검증
-// function validateDocumentIDAndConfirm(req, res, next){
-//     Document.find({ '_id': req.body.id })
-//         .then((result) => {
-//             if (!result.length) throw new Exception.InvalidParameterError('유효하지 않은 결재 서류 ID 입니다 !');
-//             if (result[0].type !== 'RUNNING') throw new Exception.InvalidParameterError('진행 중인 결재 서류만 컨펌이 가능합니다.');
-//         })
-//         .catch((err) => {
-//             if (err instanceof Exception.ExceptionError) return next(err);
-//             return next(new Exception.ExceptionError(err.message));
-//         });
-//     next();
-// }
 
-// 
+// 결재 확인 Runner 
 function confirmationRunner(req, res, next){
 
     Document.find({ '_id': req.body.id })
