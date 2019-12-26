@@ -28,6 +28,6 @@ var Confirmation = Mongoose.Schema({
     timestamps: true
 });
 
-Confirmation.index({document_id: 1, user_email: 1}, { unique: true });
+Confirmation.index({document: 1, userEmail: 1}, { unique: true });
 
 module.exports = Mongoose.model('Confirmation', Confirmation);

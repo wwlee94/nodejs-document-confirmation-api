@@ -16,7 +16,7 @@ class ExceptionError extends Base {
     }
 };
 
-class Forbidden extends Base {
+class Forbidden extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 403;
@@ -24,7 +24,7 @@ class Forbidden extends Base {
     }
 }
 
-class NotFoundTokenError extends Base {
+class NotFoundTokenError extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 400;
@@ -32,7 +32,7 @@ class NotFoundTokenError extends Base {
     }
 };
 
-class NotFoundParameterError extends Base {
+class NotFoundParameterError extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 400;
@@ -40,7 +40,7 @@ class NotFoundParameterError extends Base {
     }
 };
 
-class NotFoundDataError extends Base {
+class NotFoundDataError extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 400;
@@ -48,7 +48,7 @@ class NotFoundDataError extends Base {
     }
 };
 
-class InvalidTokenError extends Base {
+class InvalidTokenError extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 401 ;
@@ -56,7 +56,7 @@ class InvalidTokenError extends Base {
     }
 };
 
-class InvalidParameterError extends Base {
+class InvalidParameterError extends ExceptionError {
     constructor (message, status) { 
         super();
         this.status = status || 422;
