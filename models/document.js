@@ -48,4 +48,4 @@ module.exports = Mongoose.model('Document', Document);
 
 function minArraySize(val) {
     return val.length >= 1;
-  }
+}

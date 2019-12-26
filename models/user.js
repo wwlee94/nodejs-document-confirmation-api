@@ -42,10 +42,6 @@ User.path('password').validate(function(v) {
     }
 });
 
-// User.statics.findByEmail = function(email){
-//     return this.findOne({email}).exec();
-// }
-
 // 세이브 전 패스워드 해시 암호화
 User.pre('save', function (next){
     var user = this;

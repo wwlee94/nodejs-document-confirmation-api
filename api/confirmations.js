@@ -19,7 +19,6 @@ module.exports = Confirmations;
 // 파라미터 & 토큰 검증
 function validateParamsAndToken(req, res, next){
 
-    console.error('파라미터 & 토큰 검증');
     // 파라미터 검증
     if (!req.body.id) return next(new Exception.InvalidParameterError('결재 서류 ID를 입력해주세요 !'));
     if (!req.body.email) return next(new Exception.InvalidParameterError('이메일을 입력해주세요 !'));
@@ -38,10 +37,9 @@ function validateParamsAndToken(req, res, next){
 // 결재 서류 검증
 function validateDocument(req, res, next){
 
-    console.error('결재 서류 검증');
-    Confirmation.find({ 'document': req.body.id }).populate('document', 'title confirmationOrder confirmedUsers').select('document')
-        .then((result) => validateDocumentIdAndConfirm(result, req, next))
-        .then((result) => createConfirmation(result, req, res, next))
+    Confirmation.find({ 'document': req.body.id }).populate('document', 'title type confirmationOrder confirmedUsers').select('document')
+        .then((result) => validateDocumentIdAndConfirm(result, req, res))
+        .then((result) => createConfirmation(result, req, res))
         .catch((err) => {
             if (err instanceof Exception.ExceptionError) return next(err);
             return next(new Exception.ExceptionError(err.message));
@@ -49,23 +47,29 @@ function validateDocument(req, res, next){
 };
 
 // 결재 서류 ID 검증 및 confirm 가능한 문서인지 검증
-function validateDocumentIdAndConfirm(result, req, next){
-
-    console.error('결재 서류 ID 검증 및 confirm 가능한 문서인지');
-    if (!result.length) throw new Exception.InvalidParameterError('유효하지 않은 결재 서류 ID 입니다 !');
+function validateDocumentIdAndConfirm(result, req, res){
 
     doc = result[0].document;
     title = doc.title;
-    confirmationOrder = doc.confirmationOrder.filter(x => !doc.confirmedUsers.includes(x));
-    if (confirmationOrder[0] !== req.body.email) throw new Exception.ExceptionError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
+    type = doc.type;
 
-    return Document.updateOne({ _id: req.body.id }, { $push: { confirmedUsers: req.body.email }});
+    if (!result.length) throw new Exception.InvalidParameterError('유효하지 않은 결재 서류 ID 입니다 !');
+    if (type !== 'RUNNING') throw new Exception.InvalidParameterError('진행 중인 결재 서류만 컨펌이 가능합니다.');
+
+    confirmationOrder = doc.confirmationOrder.filter(x => !doc.confirmedUsers.includes(x));
+    if (confirmationOrder.length > 0 && confirmationOrder[0] !== req.body.email) throw new Exception.ExceptionError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
+    if (req.body.confirmation === 'APPROVED'){
+        if (confirmationOrder.length === 1) 
+            return Document.updateOne({ _id: req.body.id }, { $push: { confirmedUsers: req.body.email }, $set: { type: 'APPROVED' }});
+        else 
+            return Document.updateOne({ _id: req.body.id }, { $push: { confirmedUsers: req.body.email }});
+    }
+    else return Document.updateOne({ _id: req.body.id }, { $push: { confirmedUsers: req.body.email }, $set: { type: 'CANCELED' }});
 }
 
 // 결재 승인 생성
-function createConfirmation(result, req, res, next){
+function createConfirmation(result, req, res){
 
-    console.error('결재 승인 생성');
     params = {
         "document": req.body.id,
         "userEmail": req.body.email,
