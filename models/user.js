@@ -25,7 +25,7 @@ var User = Mongoose.Schema({
 // virtuals
 User.virtual('passwordConfirm')
     .get(function(){ return this._passwordConfirm; })
-    .set(function(value){ this._passwordConfirm=value; });
+    .set(function(value){ this._passwordConfirm = value; });
 
 User.path('password').validate(function(v) {
     var user = this;

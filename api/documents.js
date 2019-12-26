@@ -7,9 +7,7 @@ var Document = require('../models/document');
 var Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
-
 Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation);
-
 Documents.post('/', Util.isLoggedin, createDocuments);
 
 module.exports = Documents;
@@ -52,13 +50,13 @@ function findDocuments(req, res, next){
 
 // email query 파라미터로 documents 찾아주는 함수
 function findDocumentsBy(params, res){
-    Document.find(params)
-            .select('userEmail title type confirmationOrder confirmedUsers')
-            .exec(function(err, doc){
-                if (err) return next(new Exception.ExceptionError(err.message));
-                response = doc[0] ? doc : '검색된 데이터가 없습니다.';
-                res.send(Util.responseMsg(response));
-            });
+    Document.find(params).select('userEmail title type confirmationOrder confirmedUsers')
+        .then(doc => {
+            response = doc[0] ? doc : '검색된 데이터가 없습니다.';
+            res.send(Util.responseMsg(response));
+        })
+        .catch(err => { return next(new Exception.ExceptionError(err.message));
+    });
 }
 
 // 문서의 세부 정보를 찾아주는 함수
@@ -67,7 +65,7 @@ function findDocumentsAndConfirmation(req, res, next){
     res.send('id는? '+req.params.id);
 }
 
-// 검증 후 결재 문서 생성하는 함수
+// 검증 후 결재 문서 생성하는 함수 ** promise로 수정 예정
 function createDocuments(req, res, next){
 
     // 파라미터 검증

@@ -14,7 +14,7 @@ Util.isLoggedin = function(req, res, next){
     var token = req.headers['x-access-token'];
     if (!token) return next(new Exception.NotFoundTokenError)
     else {
-        Jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) { 
+        Jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => { 
             if (err) next(new Exception.InvalidTokenError);
             else {
                 req.user = decoded;
