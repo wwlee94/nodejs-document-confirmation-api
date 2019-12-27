@@ -3,6 +3,7 @@ var Exception = require('../exceptions/exception')
 
 var Util = {};
 
+// 반환 메시지
 Util.responseMsg = function(data){
     return{
         status: 200,
@@ -10,6 +11,7 @@ Util.responseMsg = function(data){
     }
 }
 
+// 현재 로그인 된 상태인지 검증
 Util.isLoggedin = function(req, res, next){
     var token = req.headers['x-access-token'];
     if (!token) return next(new Exception.NotFoundTokenError)

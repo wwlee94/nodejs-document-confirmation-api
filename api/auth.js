@@ -2,12 +2,12 @@ var Express = require('express');
 var Jwt = require('jsonwebtoken');
 var User = require('../models/user');
 var Util = require('../utils/util');
-var Exception = require('../exceptions/exception')
+var Exception = require('../exceptions/exception');
 
 var Auth = Express.Router();
 
 // login
-Auth.post('/login', validateParams, signIn);
+Auth.post('/login', validateParams, findUser, signIn);
 
 module.exports = Auth;
 
@@ -19,13 +19,24 @@ function validateParams(req, res, next){
     else next();
 }
 
+// 가입한 유저인지 검증
+function findUser(req, res, next){
+    User.findOne({ email: req.body.email })
+        .then(user => {
+            console.error(user);
+            if(!user) return next(new Exception.InvalidParameterError('등록되지 않은 이메일입니다. 회원가입을 먼저 진행해주세요 !'));
+            next();
+        })
+        .catch(err => { return next(new Exception.ExceptionError(err.message)); });
+}
+
 // 검증 후 로그인 작업
 function signIn(req, res, next){
 
     User.findOne({ email: req.body.email })
         .select({ email:1, password:1 })
         .then(user => {
-            if(!user || !user.authenticatePassword(req.body.password)) return next(new Exception.Forbidden('이메일 혹은 패스워드가 틀렸습니다. 다시 입력해주세요 !'));
+            if(!user || !user.authenticatePassword(req.body.password)) return next(new Exception.Forbidden('패스워드가 틀렸습니다. 다시 입력해주세요 !'));
 
             var payload = {
                 _id : user._id,

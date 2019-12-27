@@ -1,8 +1,8 @@
 var Express = require('express');
+var User = require('../models/user');
+var Document = require('../models/document');
 var Util = require('../utils/util');
 var Exception = require('../exceptions/exception');
-var User = require('../models/user')
-var Document = require('../models/document');
 
 var Documents = Express.Router();
 

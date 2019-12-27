@@ -22,10 +22,11 @@ function findUserByEmail(req, res, next){
         .catch(err => { return next(new Exception.ExceptionError(err.message)); });
 };
 
-// 유저 중복 체크
+// 유저 이메일 검증
 function validateUser(req, res, next){
-    User.find({ userEmail: req.body.email })
+    User.findOne({ email: req.body.email })
         .then(user => {
+            console.log(user);
             if(user) return next(new Exception.InvalidParameterError('이미 해당 이메일로 가입한 사용자가 있습니다 !'));
             next();
         })
