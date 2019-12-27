@@ -80,7 +80,7 @@ function createConfirmation(doc, req, res) {
             .then(confirm => updateDocumentByConfirmedUser(confirm, doc, req, res));
 };
 
-// 현재 결재자의 결재에 따라 문서 업데이트 
+// 현재 진행중인 결재자의 결재 현황에 따라 문서 업데이트
 function updateDocumentByConfirmedUser(confirm, doc, req, res){
     if (req.body.confirmation === 'APPROVED') {
         if (doc.confirmationOrderFilter().length === 1)
