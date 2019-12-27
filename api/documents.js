@@ -14,8 +14,8 @@ Documents.post('/', Util.isLoggedin, createDocumentRunner);
 module.exports = Documents;
 
 // 요청된 타입에 따른 문서 목록을 찾아주는 함수
-function findDocuments(req, res, next){
-    
+function findDocuments(req, res, next) {
+
     // 파라미터 검증
     if (!req.query.email) return next(new Exception.NotFoundParameterError('사용자 이메일을 입력해주세요 !'));
 
@@ -27,20 +27,20 @@ function findDocuments(req, res, next){
     type = req.query.type;
     email = req.query.email;
 
-    if (type && typeList.includes(type)){
-        if (type === 'OUTBOX'){
+    if (type && typeList.includes(type)) {
+        if (type === 'OUTBOX') {
             console.error('OUTBOX');
             findDocumentsBy({ userEmail: email, type: 'RUNNING' }, res);
         }
-        else if (type === 'INBOX'){
+        else if (type === 'INBOX') {
             console.error('INBOX');
             findDocumentsBy({ confirmationOrder: email, type: 'RUNNING' }, res);
         }
         else {
             //내가 관여한 문서중 결재가 완료된 문서 -> (내가 생성한 문서이거나 결재 지목을 받은 문서)를 관여한 문서라고 정의했습니다.
             console.error('ARCHIVE');
-            findDocumentsBy({ $or: [{userEmail: email}, {confirmationOrder: email}], type: {$in: ['APPROVED', 'CANCELED']}}, res);
-        } 
+            findDocumentsBy({ $or: [{ userEmail: email }, { confirmationOrder: email }], type: { $in: ['APPROVED', 'CANCELED'] } }, res);
+        }
     }
     else if (type && !typeList.includes(type)) return next(new Exception.InvalidParameterError("type은 ['OUTBOX', 'INBOX', 'ARCHIVE'] 중 하나를 가집니다."));
     else {
@@ -50,7 +50,7 @@ function findDocuments(req, res, next){
 }
 
 // email query 파라미터로 documents 찾아주는 함수
-function findDocumentsBy(params, res){
+function findDocumentsBy(params, res) {
 
     Document.find(params).select('userEmail title type confirmationOrder confirmedUsers')
         .then(doc => {
@@ -61,9 +61,9 @@ function findDocumentsBy(params, res){
 }
 
 // 문서의 세부 정보를 찾아주는 함수
-function findDocumentAndConfirmation(req, res, next){
+function findDocumentAndConfirmation(req, res, next) {
     Document.findOne({ '_id': req.params.id }).populate('confirmedUsers', 'userEmail comment confirmation')
-        .then(doc => {        
+        .then(doc => {
             if (doc) authenticateUserForShowDocument(doc, req, next);
 
             result = doc ? doc : '검색된 데이터가 없습니다 !';
@@ -75,15 +75,15 @@ function findDocumentAndConfirmation(req, res, next){
         });
 }
 
-// 문서의 세부정보 조회시 문서와 관련된 사용자들만 조회 가능하도록 검증
-function authenticateUserForShowDocument(doc, req, next){
+// 문서의 세부정보 조회시 문서와 관련된 사용자들만 조회 가능하도록 권한 확인
+function authenticateUserForShowDocument(doc, req, next) {
     authenticateUser = _.cloneDeep(doc.confirmationOrder);
     authenticateUser.push(doc.userEmail);
-    if (!authenticateUser.includes(req.user.email)) return next(new Exception.Forbidden('해당 결재 문서의 세부 정보를 조회할 권한이 없습니다 !'));
+    if (!authenticateUser.includes(req.user.email)) return next(new Exception.Forbidden('해당 문서의 세부 정보를 조회할 권한이 없습니다 !'));
 }
 
 // 검증 후 결재 문서 생성하는 함수
-function createDocumentRunner(req, res, next){
+function createDocumentRunner(req, res, next) {
 
     // 파라미터 검증
     if (!req.body.email) return next(new Exception.InvalidParameterError('사용자 이메일을 입력해주세요 !'));
@@ -96,8 +96,8 @@ function createDocumentRunner(req, res, next){
 
     //결재 요청한 email 검증
     emailList = req.body.order.split(',').map(x => x.trim());
-    if (emailList.length >= 1){
-        User.find({ email: {$in : emailList} })
+    if (emailList.length >= 1) {
+        User.find({ email: { $in: emailList } })
             .then(user => {
                 if (user && emailList.length !== user.length) {
                     userEmail = user.map(x => x['email']);
@@ -112,13 +112,13 @@ function createDocumentRunner(req, res, next){
 }
 
 // 결재 문서 생성하는 함수
-function createDocument(req, res, next){
+function createDocument(req, res, next) {
 
     params = {
-        "userEmail" : req.body.email,
-        "title" : req.body.title,
-        "content" : req.body.content,
-        "confirmationOrder" : emailList
+        "userEmail": req.body.email,
+        "title": req.body.title,
+        "content": req.body.content,
+        "confirmationOrder": emailList
     };
     var document = new Document(params);
     document.save()
