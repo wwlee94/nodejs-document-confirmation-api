@@ -6,7 +6,7 @@ var Exception = require('../exceptions/exception');
 var Users = Express.Router();
 
 Users.get('/', Util.isLoggedin, findUserByEmail);
-Users.post('/', createUser);
+Users.post('/', validateUser, createUser);
 Users.delete('/', Util.isLoggedin, checkPermission, deleteUserByEmail);
 
 module.exports = Users;
@@ -20,7 +20,17 @@ function findUserByEmail(req, res, next){
             res.send(Util.responseMsg(response));
         })
         .catch(err => { return next(new Exception.ExceptionError(err.message)); });
-}
+};
+
+// 유저 중복 체크
+function validateUser(req, res, next){
+    User.find({ userEmail: req.body.email })
+        .then(user => {
+            if(user) return next(new Exception.InvalidParameterError('이미 해당 이메일로 가입한 사용자가 있습니다 !'));
+            next();
+        })
+        .catch(err => { return next(new Exception.ExceptionError(err.message)); });
+};
 
 // 유저 생성
 function createUser(req, res, next){
@@ -30,7 +40,7 @@ function createUser(req, res, next){
             res.send(Util.responseMsg(`${user.email} 계정을 생성했습니다 !`));
         })
         .catch(err => { return next(new Exception.ExceptionError(err.message)); });
-}
+};
 
 // 삭제 권한 확인
 function checkPermission(req, res, next){
@@ -51,4 +61,4 @@ function deleteUserByEmail(req, res, next){
             res.send(Util.responseMsg(response));
         })
         .catch(err => { return next(new Exception.ExceptionError(err.message)); });
-}
+};

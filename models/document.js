@@ -29,13 +29,13 @@ var Document = Mongoose.Schema({
         required: [true, '결제자 순서를 입력해주세요 !'],
         validate: [minArraySize, '최소 1명 이상의 결재자를 입력해주세요.']
     },
-    confirmedUsers: {
-        type: [String]
-    }
-    // confirmedUsers: [{
-    //     type: Mongoose.Schema.Types.ObjectId,
-    //     ref: 'Confirmation'
-    // }],
+    // confirmedUsers: {
+    //     type: [String]
+    // }
+    confirmedUsers: [{
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'Confirmation'
+    }]
 },
 {
     versionKey: false,

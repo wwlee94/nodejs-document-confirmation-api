@@ -7,7 +7,7 @@ var Document = require('../models/document');
 var Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
-Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation);
+Documents.get('/:id', Util.isLoggedin, findDocumentAndConfirmation);
 Documents.post('/', Util.isLoggedin, createDocumentRunner);
 
 module.exports = Documents;
@@ -60,9 +60,15 @@ function findDocumentsBy(params, res){
 }
 
 // 문서의 세부 정보를 찾아주는 함수
-function findDocumentsAndConfirmation(req, res, next){
-
-    res.send('id는? '+req.params.id);
+function findDocumentAndConfirmation(req, res, next){
+    Document.find({ '_id': req.params.id }).populate('confirmation')
+        .then(doc => {
+            res.send(Util.responseMsg(doc));
+        })
+        .catch(err => {
+            if (err instanceof Exception.ExceptionError) return next(err);
+            return next(new Exception.ExceptionError(err.message));
+        });
 }
 
 // 검증 후 결재 문서 생성하는 함수
