@@ -12,7 +12,7 @@ db.once('open', function () { console.log('Successfully connected to MongoDB!');
 
 // var doc = new Document({
 //     user_email: "wjdtjddus1109@naver.com",
-//     title: '세번째 결제 서류',
+//     title: '세번째 결제 문서',
 //     content: '내용은 다음과 같습니다',
 //     approval_order: ['wjdtjddus1109@naver.com']
 // });

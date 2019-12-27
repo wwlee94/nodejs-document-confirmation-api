@@ -9,7 +9,7 @@ var Confirmation = Mongoose.Schema({
     },
     userEmail: {
         type: String,
-        required: [true, '문서를 결재할 사용자 이메일을 입력해주세요 !'],
+        required: [true, '문서를 결재하는 사용자 이메일을 입력해주세요 !'],
         trim: true
     },
     comment: {

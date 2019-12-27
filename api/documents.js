@@ -8,7 +8,7 @@ var Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
 Documents.get('/:id', Util.isLoggedin, findDocumentsAndConfirmation);
-Documents.post('/', Util.isLoggedin, createDocuments);
+Documents.post('/', Util.isLoggedin, createDocumentRunner);
 
 module.exports = Documents;
 
@@ -16,7 +16,7 @@ module.exports = Documents;
 function findDocuments(req, res, next){
     
     // 파라미터 검증
-    if (!req.query.email) return next(new Exception.NotFoundParameterError('이메일을 입력해주세요 !'));
+    if (!req.query.email) return next(new Exception.NotFoundParameterError('사용자 이메일을 입력해주세요 !'));
 
     // 토큰 검증
     if (req.user.email !== req.query.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다.'));
@@ -50,13 +50,13 @@ function findDocuments(req, res, next){
 
 // email query 파라미터로 documents 찾아주는 함수
 function findDocumentsBy(params, res){
+
     Document.find(params).select('userEmail title type confirmationOrder confirmedUsers')
         .then(doc => {
             response = doc[0] ? doc : '검색된 데이터가 없습니다.';
             res.send(Util.responseMsg(response));
         })
-        .catch(err => { return next(new Exception.ExceptionError(err.message));
-    });
+        .catch(err => { return next(new Exception.ExceptionError(err.message)); });
 }
 
 // 문서의 세부 정보를 찾아주는 함수
@@ -65,41 +65,48 @@ function findDocumentsAndConfirmation(req, res, next){
     res.send('id는? '+req.params.id);
 }
 
-// 검증 후 결재 문서 생성하는 함수 ** promise로 수정 예정
-function createDocuments(req, res, next){
+// 검증 후 결재 문서 생성하는 함수
+function createDocumentRunner(req, res, next){
 
     // 파라미터 검증
-    if (!req.body.email) return next(new Exception.InvalidParameterError('이메일을 입력해주세요 !'));
-    if (!req.body.title) return next(new Exception.InvalidParameterError('제목을 입력해주세요 !'));
-    if (!req.body.content) return next(new Exception.InvalidParameterError('내용을 입력해주세요 !'));
+    if (!req.body.email) return next(new Exception.InvalidParameterError('사용자 이메일을 입력해주세요 !'));
+    if (!req.body.title) return next(new Exception.InvalidParameterError('문서 제목을 입력해주세요 !'));
+    if (!req.body.content) return next(new Exception.InvalidParameterError('문서 내용을 입력해주세요 !'));
     if (!req.body.order) return next(new Exception.InvalidParameterError('결재 순서를 입력해주세요 !'));
 
     // 토큰 검증
     if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다.'));
 
-    //결재 요청한 email 검증 - 함수로 뺄지 고민
+    //결재 요청한 email 검증
     emailList = req.body.order.split(',').map(x => x.trim());
     if (emailList.length >= 1){
-        User.find({email: {$in : emailList}})
-            .exec(function(err, user){
-                if (err) return next(new Exception.ExceptionError(err.message, err.status));
+        User.find({ email: {$in : emailList} })
+            .then(user => {
                 if (user && emailList.length !== user.length) {
                     userEmail = user.map(x => x['email']);
                     invalidEmailList = emailList.filter(x => !userEmail.includes(x));
                     return next(new Exception.InvalidParameterError(`존재하지 않는 이메일입니다.\n [${invalidEmailList.join(', ')}]`));
                 }
-                params = {
-                    "userEmail" : req.body.email,
-                    "title" : req.body.title,
-                    "content" : req.body.content,
-                    "confirmationOrder" : emailList
-                };
-                var document = new Document(params);
-                document.save(function(err, document){
-                    if (err) return next(new Exception.ExceptionError(err.message, 400));
-                    res.send(Util.responseMsg(`'${document.title}' 결재 서류를 생성했습니다 !`));
-                });
-            });
+                createDocument(req, res, next);
+            })
+            .catch(err => { return next(new Exception.ExceptionError(err.message)); });
     }
     else return next(new Exception.InvalidParameterError('최소 1명 이상의 결재자를 입력해주세요.'));
+}
+
+// 결재 문서 생성하는 함수
+function createDocument(req, res, next){
+
+    params = {
+        "userEmail" : req.body.email,
+        "title" : req.body.title,
+        "content" : req.body.content,
+        "confirmationOrder" : emailList
+    };
+    var document = new Document(params);
+    document.save()
+        .then(doc => {
+            res.send(Util.responseMsg(`['${document.title}'] 결재 문서를 생성했습니다 !`));
+        })
+        .catch(err => { return next(new Exception.ExceptionError(err.message)); });
 }
