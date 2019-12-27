@@ -1,10 +1,11 @@
-var Express = require('express');
-var User = require('../models/user');
-var Document = require('../models/document');
-var Util = require('../utils/util');
-var Exception = require('../exceptions/exception');
+const Express = require('express');
+const _ = require("lodash");
+const User = require('../models/user');
+const Document = require('../models/document');
+const Util = require('../utils/util');
+const Exception = require('../exceptions/exception');
 
-var Documents = Express.Router();
+const Documents = Express.Router();
 
 Documents.get('/', Util.isLoggedin, findDocuments);
 Documents.get('/:id', Util.isLoggedin, findDocumentAndConfirmation);
@@ -53,7 +54,7 @@ function findDocumentsBy(params, res){
 
     Document.find(params).select('userEmail title type confirmationOrder confirmedUsers')
         .then(doc => {
-            response = doc[0] ? doc : '검색된 데이터가 없습니다.';
+            response = doc[0] ? doc : '검색된 데이터가 없습니다 !';
             res.send(Util.responseMsg(response));
         })
         .catch(err => { return next(new Exception.ExceptionError(err.message)); });
@@ -61,14 +62,24 @@ function findDocumentsBy(params, res){
 
 // 문서의 세부 정보를 찾아주는 함수
 function findDocumentAndConfirmation(req, res, next){
-    Document.find({ '_id': req.params.id }).populate('confirmation')
-        .then(doc => {
-            res.send(Util.responseMsg(doc));
+    Document.findOne({ '_id': req.params.id }).populate('confirmedUsers', 'userEmail comment confirmation')
+        .then(doc => {        
+            if (doc) authenticateUserForShowDocument(doc, req, next);
+
+            result = doc ? doc : '검색된 데이터가 없습니다 !';
+            res.send(Util.responseMsg(result));
         })
         .catch(err => {
             if (err instanceof Exception.ExceptionError) return next(err);
             return next(new Exception.ExceptionError(err.message));
         });
+}
+
+// 문서의 세부정보 조회시 문서와 관련된 사용자들만 조회 가능하도록 검증
+function authenticateUserForShowDocument(doc, req, next){
+    authenticateUser = _.cloneDeep(doc.confirmationOrder);
+    authenticateUser.push(doc.userEmail);
+    if (!authenticateUser.includes(req.user.email)) return next(new Exception.Forbidden('해당 결재 문서의 세부 정보를 조회할 권한이 없습니다 !'));
 }
 
 // 검증 후 결재 문서 생성하는 함수

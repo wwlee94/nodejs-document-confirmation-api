@@ -1,10 +1,10 @@
-var Express = require('express');
-var Confirmation = require('../models/confirmation');
-var Document = require('../models/document');
-var Util = require('../utils/util');
-var Exception = require('../exceptions/exception');
+const Express = require('express');
+const Confirmation = require('../models/confirmation');
+const Document = require('../models/document');
+const Util = require('../utils/util');
+const Exception = require('../exceptions/exception');
 
-var Confirmations = Express.Router();
+const Confirmations = Express.Router();
 var title = '';
 
 Confirmations.get('/', Util.isLoggedin, findConfirmationByEmail);
@@ -52,7 +52,7 @@ function createConfirmationRunner(req, res, next){
             if (err instanceof Exception.ExceptionError) return next(err);
             return next(new Exception.ExceptionError(err.message));
         });
-        
+
     // Confirmation.find({ 'document': req.body.id }).populate('document', 'title type confirmationOrder confirmedUsers').select('document')
     //     .then((result) => updateConfirmUserOrType(result, req, res))
     //     .then((result) => createConfirmation(result, req, res))

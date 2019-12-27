@@ -1,4 +1,4 @@
-var Mongoose = require('mongoose');
+const Mongoose = require('mongoose');
 
 // 스키마
 var Document = Mongoose.Schema({
@@ -42,7 +42,7 @@ var Document = Mongoose.Schema({
     timestamps: true
 });
 
-Document.index({ title: 1, userEmail: 1}, { unique: true });
+Document.index({ title: 1, userEmail: 1 }, { unique: true });
 
 module.exports = Mongoose.model('Document', Document);
 

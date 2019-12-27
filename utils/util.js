@@ -1,5 +1,5 @@
-var Jwt = require('jsonwebtoken');
-var Exception = require('../exceptions/exception')
+const Jwt = require('jsonwebtoken');
+const Exception = require('../exceptions/exception')
 
 var Util = {};
 

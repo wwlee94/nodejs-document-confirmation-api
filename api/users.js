@@ -1,9 +1,9 @@
-var Express = require('express');
-var User = require('../models/user');
-var Util = require('../utils/util');
-var Exception = require('../exceptions/exception');
+const Express = require('express');
+const User = require('../models/user');
+const Util = require('../utils/util');
+const Exception = require('../exceptions/exception');
 
-var Users = Express.Router();
+const Users = Express.Router();
 
 Users.get('/', Util.isLoggedin, findUserByEmail);
 Users.post('/', validateUser, createUser);

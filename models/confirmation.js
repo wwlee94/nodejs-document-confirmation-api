@@ -1,4 +1,4 @@
-var Mongoose = require('mongoose');
+const Mongoose = require('mongoose');
 
 // 스키마
 var Confirmation = Mongoose.Schema({
@@ -28,6 +28,6 @@ var Confirmation = Mongoose.Schema({
     timestamps: true
 });
 
-Confirmation.index({document: 1, userEmail: 1}, { unique: true });
+Confirmation.index({ document: 1, userEmail: 1 }, { unique: true });
 
 module.exports = Mongoose.model('Confirmation', Confirmation);

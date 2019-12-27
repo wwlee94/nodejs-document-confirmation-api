@@ -1,10 +1,10 @@
-var Express = require('express');
-var Jwt = require('jsonwebtoken');
-var User = require('../models/user');
-var Util = require('../utils/util');
-var Exception = require('../exceptions/exception');
+const Express = require('express');
+const Jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const Util = require('../utils/util');
+const Exception = require('../exceptions/exception');
 
-var Auth = Express.Router();
+const Auth = Express.Router();
 
 // login
 Auth.post('/login', validateParams, findUser, signIn);

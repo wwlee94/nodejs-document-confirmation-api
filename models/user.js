@@ -1,5 +1,5 @@
-var Crypto = require('crypto');
-var Mongoose = require('mongoose');
+const Crypto = require('crypto');
+const Mongoose = require('mongoose');
 require('dotenv').config();
 
 // 스키마
