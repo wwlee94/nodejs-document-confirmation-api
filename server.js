@@ -1,21 +1,32 @@
-var Express = require('express');
-var Mongoose = require('mongoose');
-var BodyParser = require('body-parser');
+const Express = require('express');
+const Mongoose = require('mongoose');
+const BodyParser = require('body-parser');
 
 // env 설정
 require('dotenv').config();
+
+var MONGO_DB_URL;
+var PORT;
+if(process.env.NODE_ENV === "test"){
+    MONGO_DB_URL = process.env.MONGO_TEST_DB_URL;
+    PORT = process.env.TEST_PORT;
+}
+else{
+    MONGO_DB_URL = process.env.MONGO_DB_URL;
+    PORT = process.env.PORT;
+}
 
 console.log('Start Nodejs Web Server !');
 
 // MongoDB 설정
 Mongoose.Promise = global.Promise;
-Mongoose.connect(process.env.MONGO_DB_URL, {
+Mongoose.connect(MONGO_DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 Mongoose.set('debug', true);
 var db = Mongoose.connection;
-db.once('open', function () { console.log('Successfully connected to MongoDB!'); });
+db.once('open', function () { console.log(`Successfully connected to MongoDB! at ${MONGO_DB_URL}`); });
 db.on('error', function (err) { console.log('MongoDB Error: ', err); });
 
 var app = Express();
@@ -49,7 +60,7 @@ app.use(logHandler);
 app.use(errorHandler);
 
 // server 설정
-var port = process.env.PORT || 3000;
+var port = PORT || 3000;
 app.listen(port, () => {
     console.log('listening on port: ' + port);
 });
