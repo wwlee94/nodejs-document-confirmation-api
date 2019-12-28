@@ -11,7 +11,7 @@ Confirmations.post('/', Util.isLoggedin, validateParamsAndToken, createConfirmat
 
 module.exports = Confirmations;
 
-// 자신의 결재 요청 목록 confirmation 검색
+// 자신의 결재 요청 목록 검색
 function findConfirmationByEmail(req, res, next) {
     Confirmation.find({ 'userEmail': req.query.email }).populate('document', 'title type').select('comment confirmation createdAt')
         .then(confirm => {
