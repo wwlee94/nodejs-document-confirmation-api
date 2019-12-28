@@ -32,7 +32,7 @@ function validateParamsAndToken(req, res, next) {
     if (!req.body.confirmation) return next(new Exception.InvalidParameterError('확인한 결재 문서가 승인인지 취소인지 입력해주세요 !'));
 
     // 토큰 검증
-    if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다 !'));
+    if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 이메일 정보와 입력한 이메일이 일치하지 않습니다.'));
 
     // 승인 종류
     confirmationList = ['APPROVED', 'CANCELED'];

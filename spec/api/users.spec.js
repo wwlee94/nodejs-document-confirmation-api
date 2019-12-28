@@ -48,6 +48,7 @@ describe('Users router test !', function (done) {
                 .expect(200)
                 .end((err, res) => {
                     if (err) done(err);
+                    expect(res.body.status).to.be.equal(200);
                     expect(res.body.data).to.have.all.keys(['_id', 'email', 'createdAt', 'updatedAt']);
                     expect(res.body.data.email).to.be.equal('wwlee94@naver.com');
                     done();
@@ -75,14 +76,12 @@ describe('Users router test !', function (done) {
                     password: 'newUser',
                     passwordConfirm: 'newUser'
                 })
-                .expect(200)
+                .expect(401)
                 .end((err, res) => {
                     if (err) done(err);
-                    User.findOne({ email: 'newUser@naver.com' })
-                        .then(user => {
-                            expect(user.email).to.be.equal('newUser@naver.com');
-                            done();
-                        });
+                    expect(res.body.error.status).to.be.equal(401);
+                    expect(res.body.error.name).to.be.equal('InvalidParameterError');
+                    done();
                 });
         });
 

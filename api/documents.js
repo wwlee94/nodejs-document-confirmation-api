@@ -20,7 +20,7 @@ function findDocuments(req, res, next) {
     if (!req.query.email) return next(new Exception.NotFoundParameterError('사용자 이메일을 입력해주세요 !'));
 
     // 토큰 검증
-    if (req.user.email !== req.query.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다.'));
+    if (req.user.email !== req.query.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 이메일 정보와 입력한 이메일이 일치하지 않습니다.'));
 
     // 문서의 상태 종류
     typeList = ['OUTBOX', 'INBOX', 'ARCHIVE'];
@@ -92,7 +92,7 @@ function createDocumentRunner(req, res, next) {
     if (!req.body.order) return next(new Exception.InvalidParameterError('결재 순서를 입력해주세요 !'));
 
     // 토큰 검증
-    if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 사용자 이메일과 입력한 이메일이 유효하지 않습니다.'));
+    if (req.user.email !== req.body.email) return next(new Exception.InvalidTokenError('발급 받은 토큰의 이메일 정보와 입력한 이메일이 일치하지 않습니다.'));
 
     //결재 요청한 email 검증
     emailList = req.body.order.split(',').map(x => x.trim());
