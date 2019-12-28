@@ -108,15 +108,16 @@ describe('Documents router test !', function (done) {
             Document.findOne({ userEmail: 'wwlee94@naver.com' })
                 .then(doc => {
                     docId = doc._id;
-                    var confirm = {
-                        document: docId,
-                        userEmail: 'wjdtjddus1109@naver.com',
-                        confirmation: "APPROVED"
-                    };
-                    new Confirmation(confirm).save()
-                        .then(confirm => {
-                            done();
-                        });
+                    done();
+                    // var confirm = {
+                    //     document: docId,
+                    //     userEmail: 'wjdtjddus1109@naver.com',
+                    //     confirmation: "APPROVED"
+                    // };
+                    // new Confirmation(confirm).save()
+                    //     .then(confirm => {
+                    //         done();
+                    //     });
                 });
         });
         it('결재 서류의 세부 정보를 반환한다. (content, createdAt, updatedAt 등등)', done => {
@@ -139,28 +140,28 @@ describe('Documents router test !', function (done) {
                 passwordConfirm: 'password'
             };
             new User(info).save()
-            .then(user => {
-                request(server).post('/api/auth/login')
-                    .send({
-                        email: info.email,
-                        password: info.password
-                    })
-                    .expect(200)
-                    .end((err, res) => {
-                        if (err) done(err);
-                        tokenUser2 = res.body.data.token;
-                        var showUrl = `${url}/${docId}`
-                        request(server).get(showUrl)
-                            .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
-                            .expect(403)
-                            .end((err, res) => {
-                                if (err) done(err);
-                                expect(res.body.error.status).to.be.equal(403);
-                                expect(res.body.error.name).to.be.equal('Forbidden');
-                                done();
-                            });
-                    });
-            });
+                .then(user => {
+                    request(server).post('/api/auth/login')
+                        .send({
+                            email: info.email,
+                            password: info.password
+                        })
+                        .expect(200)
+                        .end((err, res) => {
+                            if (err) done(err);
+                            tokenUser2 = res.body.data.token;
+                            var showUrl = `${url}/${docId}`
+                            request(server).get(showUrl)
+                                .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                                .expect(403)
+                                .end((err, res) => {
+                                    if (err) done(err);
+                                    expect(res.body.error.status).to.be.equal(403);
+                                    expect(res.body.error.name).to.be.equal('Forbidden');
+                                    done();
+                                });
+                        });
+                });
         });
     });
 
@@ -169,16 +170,16 @@ describe('Documents router test !', function (done) {
             request(server).post(url)
                 .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
                 .send({
-                    email : 'user2@naver.com',
+                    email: 'user2@naver.com',
                     title: '다섯번째 문서 입니다.',
                     content: '내용은 다음과 같습니다!',
-                    order : 'wwlee94@naver.com'
+                    order: 'wwlee94@naver.com'
                 })
                 .expect(200)
                 .end((err, res) => {
                     if (err) done(err);
-                    Document.find({userEmail: 'user2@naver.com'})
-                        .then(doc => {                            
+                    Document.find({ userEmail: 'user2@naver.com' })
+                        .then(doc => {
                             expect(doc).to.have.lengthOf(1);
                             done();
                         });
@@ -189,10 +190,10 @@ describe('Documents router test !', function (done) {
             request(server).post(url)
                 .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
                 .send({
-                    email : 'notMatchEmail@naver.com',
+                    email: 'notMatchEmail@naver.com',
                     title: '다섯번째 문서 입니다.',
                     content: '내용은 다음과 같습니다!',
-                    order : 'wwlee94@naver.com'
+                    order: 'wwlee94@naver.com'
                 })
                 .expect(401)
                 .end((err, res) => {
@@ -207,10 +208,10 @@ describe('Documents router test !', function (done) {
             request(server).post(url)
                 .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
                 .send({
-                    email : 'user2@naver.com',
+                    email: 'user2@naver.com',
                     title: '다섯번째 문서 입니다.',
                     content: '내용은 다음과 같습니다!',
-                    order : 'wwlee94@naver.com, notFoundUser@naver.com'
+                    order: 'wwlee94@naver.com, notFoundUser@naver.com'
                 })
                 .expect(422)
                 .end((err, res) => {

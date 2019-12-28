@@ -107,16 +107,16 @@ describe('Users router test !', function (done) {
     describe('DELETE / 요청은', () => {
         before((done) => {
             request(server).post('/api/auth/login')
-            .send({
-                email: 'newUser@naver.com',
-                password: 'newUser'
-            })
-            .expect(200)
-            .end((err, res) => {
-                if (err) done(err);
-                tokenUser2 = res.body.data.token;
-                done();
-            });
+                .send({
+                    email: 'newUser@naver.com',
+                    password: 'newUser'
+                })
+                .expect(200)
+                .end((err, res) => {
+                    if (err) done(err);
+                    tokenUser2 = res.body.data.token;
+                    done();
+                });
         });
 
         it('삭제하려는 계정이 없을 경우 "NotFoundDataError" 에러를 발생시킨다.', done => {
