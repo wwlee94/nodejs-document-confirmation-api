@@ -9,9 +9,9 @@ console.log('Start Nodejs Web Server !');
 
 // MongoDB 설정
 Mongoose.Promise = global.Promise;
-Mongoose.connect( process.env.MONGO_DB_URL, {
+Mongoose.connect(process.env.MONGO_DB_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true 
+    useUnifiedTopology: true
 });
 Mongoose.set('debug', true);
 var db = Mongoose.connection;
@@ -22,7 +22,7 @@ var app = Express();
 
 // app 미들웨어
 app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({extended: true}));
+app.use(BodyParser.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
@@ -32,7 +32,7 @@ app.use(function (req, res, next) {
 
 // api 라우트 설정
 app.use('/api/users', require('./api/users'));
-app.use('/api/auth', require('./api/auth')); 
+app.use('/api/auth', require('./api/auth'));
 app.use('/api/documents', require('./api/documents'));
 app.use('/api/confirmations', require('./api/confirmations'));
 
@@ -43,13 +43,15 @@ function logHandler(err, req, res, next) {
 }
 function errorHandler(err, req, res, next) {
     res.status(err.status || 500);
-    res.type('json').send(JSON.stringify({error: err || 'Uncaught Error !'}, null, 4));
+    res.type('json').send(JSON.stringify({ error: err || 'Uncaught Error !' }, null, 4));
 }
 app.use(logHandler);
 app.use(errorHandler);
 
 // server 설정
 var port = process.env.PORT || 3000;
-app.listen(port, function(){
+app.listen(port, () => {
     console.log('listening on port: ' + port);
 });
+
+module.exports = app;
