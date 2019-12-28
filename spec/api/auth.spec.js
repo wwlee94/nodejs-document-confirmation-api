@@ -3,8 +3,9 @@ const request = require('supertest');
 const server = require('../../server');
 const User = require('../../models/user');
 const expect = chai.expect;
+const sinon = require('sinon');
 
-describe('auth router test !', function(done) {
+describe('Auth router test !', function (done) {
     this.timeout(10000);
 
     before((done) => {
@@ -15,7 +16,7 @@ describe('auth router test !', function(done) {
         };
         new User(info).save()
             .then(user => {
-                console.log('Save ValideUser !');
+                console.log('Save ValidUser !');
                 done();
             });
     });
@@ -27,7 +28,7 @@ describe('auth router test !', function(done) {
     var login = '/api/auth/login';
     describe('POST /login 요청은', () => {
 
-        it('에러가 없다면 사용자에게 Token을 발급한다.', function (done) {
+        it('에러가 없다면 사용자에게 Token을 발급한다.', done => {
             request(server).post(login)
                 .send({
                     email: 'wwlee94@naver.com',
@@ -42,7 +43,7 @@ describe('auth router test !', function(done) {
                 });
         });
 
-        it('email 또는 password 파라미터가 없으면 "NotFoundParameterError" 에러를 발생시킨다.', function (done) {
+        it('email 또는 password 파라미터가 없으면 "NotFoundParameterError" 에러를 발생시킨다.', done => {
             request(server).post(login)
                 .send({
                     email: 'wwlee94@naver.com'
@@ -56,7 +57,7 @@ describe('auth router test !', function(done) {
                 });
         });
 
-        it('등록되어 있는 이메일이 아니라면 "InvalidParameterError" 에러를 발생시킨다.', function (done) {
+        it('등록되어 있는 이메일이 아니라면 "InvalidParameterError" 에러를 발생시킨다.', done => {
             request(server).post(login)
                 .send({
                     email: 'notRegisteredEmail@naver.com',
@@ -71,7 +72,7 @@ describe('auth router test !', function(done) {
                 });
         });
 
-        it('패스워드가 틀렸을 경우 "Forbidden" 에러를 발생시킨다.', function (done) {
+        it('패스워드가 틀렸을 경우 "Forbidden" 에러를 발생시킨다.', done => {
             request(server).post(login)
                 .send({
                     email: 'wwlee94@naver.com',

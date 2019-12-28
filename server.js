@@ -49,6 +49,7 @@ app.use('/api/confirmations', require('./api/confirmations'));
 
 // 로그, 에러 핸들러
 function logHandler(err, req, res, next) {
+    // if (process.env.NODE_ENV === "test") 
     console.error('[' + new Date() + ']\n' + err.stack);
     next(err);
 }
