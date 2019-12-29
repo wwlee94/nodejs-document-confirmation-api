@@ -11,8 +11,8 @@ describe('Auth router test !', function (done) {
     before((done) => {
         var info = {
             email: 'wwlee94@naver.com',
-            password: 'password1',
-            passwordConfirm: 'password1'
+            password: 'password',
+            passwordConfirm: 'password'
         };
         new User(info).save()
             .then(user => {
@@ -32,7 +32,7 @@ describe('Auth router test !', function (done) {
             request(server).post(login)
                 .send({
                     email: 'wwlee94@naver.com',
-                    password: 'password1'
+                    password: 'password'
                 })
                 .expect(200)
                 .end((err, res) => {

@@ -18,8 +18,8 @@ describe('Documents router test !', function (done) {
     before((done) => {
         var info = {
             email: 'wwlee94@naver.com',
-            password: 'password1',
-            passwordConfirm: 'password1'
+            password: 'password',
+            passwordConfirm: 'password'
         };
         new User(info).save()
             .then(user => {
@@ -212,6 +212,24 @@ describe('Documents router test !', function (done) {
                     title: '다섯번째 문서 입니다.',
                     content: '내용은 다음과 같습니다!',
                     order: 'wwlee94@naver.com, notFoundUser@naver.com'
+                })
+                .expect(422)
+                .end((err, res) => {
+                    if (err) done(err);
+                    expect(res.body.error.status).to.be.equal(422);
+                    expect(res.body.error.name).to.be.equal('InvalidParameterError');
+                    done();
+                });
+        });
+
+        it('결재자를 입력하지 않으면 "InvalidParameterError" 에러를 발생시킨다.', done => {
+            request(server).post(url)
+                .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                .send({
+                    email: 'user2@naver.com',
+                    title: '다섯번째 문서 입니다.',
+                    content: '내용은 다음과 같습니다!',
+                    order: ''
                 })
                 .expect(422)
                 .end((err, res) => {

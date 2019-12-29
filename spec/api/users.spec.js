@@ -11,11 +11,11 @@ describe('Users router test !', function (done) {
     var tokenUser2 = '';
 
     // 회원 가입 후 로그인
-    before((done) => {
+    before(done => {
         var info = {
             email: 'wwlee94@naver.com',
-            password: 'password1',
-            passwordConfirm: 'password1'
+            password: 'password',
+            passwordConfirm: 'password'
         };
         new User(info).save()
             .then(user => {

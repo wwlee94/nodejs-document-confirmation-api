@@ -7,6 +7,7 @@ const Confirmation = require('../../models/confirmation');
 const expect = chai.expect;
 
 var tokenUser1 = '';
+var tokenUser2 = '';
 var docId = '';
 
 describe('Confirmations router test !', function (done) {
@@ -15,22 +16,40 @@ describe('Confirmations router test !', function (done) {
 
     // 회원 가입 후 로그인
     before((done) => {
-        var info = {
+        var user1 = {
             email: 'wwlee94@naver.com',
-            password: 'password1',
-            passwordConfirm: 'password1'
+            password: 'password',
+            passwordConfirm: 'password'
         };
-        new User(info).save()
+        var user2 = {
+            email: 'dlfighk1028@naver.com',
+            password: 'password',
+            passwordConfirm: 'password'
+        };
+        new User(user1).save()
             .then(user => {
                 request(server).post('/api/auth/login')
                     .send({
-                        email: info.email,
-                        password: info.password
+                        email: user1.email,
+                        password: user1.password
                     })
                     .expect(200)
                     .end((err, res) => {
                         if (err) done(err);
                         tokenUser1 = res.body.data.token;
+                    });
+            });
+        new User(user2).save()
+            .then(user => {
+                request(server).post('/api/auth/login')
+                    .send({
+                        email: user2.email,
+                        password: user2.password
+                    })
+                    .expect(200)
+                    .end((err, res) => {
+                        if (err) done(err);
+                        tokenUser2 = res.body.data.token;
                         done();
                     });
             });
@@ -71,6 +90,28 @@ describe('Confirmations router test !', function (done) {
                         .send({
                             id: doc._id,
                             email: 'wwlee94@naver.com',
+                            conmment: '내용은 다음과 같습니다!',
+                            confirmation: 'CANCELED'
+                        })
+                        .expect(422)
+                        .end((err, res) => {
+                            if (err) done(err);
+                            expect(res.body.error.status).to.be.equal(422);
+                            expect(res.body.error.name).to.be.equal('InvalidParameterError');
+                            done();
+                        });
+                });
+        });
+
+        it('결재 차례가 아닐 경우 "InvalidParameterError" 에러를 발생시킨다.', done => {
+            Document.findOne({ userEmail: 'wjdtjddus1109@naver.com' })
+                .then(doc => {
+                    docId = doc._id;
+                    request(server).post(url)
+                        .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                        .send({
+                            id: docId,
+                            email: 'dlfighk1028@naver.com',
                             conmment: '내용은 다음과 같습니다!',
                             confirmation: 'CANCELED'
                         })

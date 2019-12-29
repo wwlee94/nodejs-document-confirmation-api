@@ -61,7 +61,7 @@ function validateDocumentIdAndConfirm(doc, req) {
 
     // 결재 순서에서 현재 결재된 사용자를 뺀 리스트
     confirmationOrder = doc.confirmationOrderFilter();
-    if (confirmationOrder.length > 0 && doc.confirmationOrder[0] !== req.body.email) throw new Exception.ExceptionError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
+    if (confirmationOrder.length > 0 && doc.confirmationOrder[0] !== req.body.email) throw new Exception.InvalidParameterError(`지금은 해당 사용자의 결재 차례가 아닙니다 ! 다음 결재자는 '${confirmationOrder[0]}' 입니다.`);
     return doc;
 };
 
