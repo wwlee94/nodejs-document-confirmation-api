@@ -8,8 +8,7 @@ var User = Mongoose.Schema({
         type: String,
         required: [true, '이메일을 입력해주세요 !'],
         match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, '이메일 주소여야 합니다 ! (ex: nodejs@gmail.com)'],
-        trim: true,
-        unique: true
+        trim: true
     },
     password: {
         type: String,
@@ -21,6 +20,8 @@ var User = Mongoose.Schema({
         versionKey: false,
         timestamps: true
     });
+
+User.index({ email: 1 }, { unique: true });
 
 // virtuals
 User.virtual('passwordConfirm')

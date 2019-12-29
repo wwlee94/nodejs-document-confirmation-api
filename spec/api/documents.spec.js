@@ -3,30 +3,30 @@ const request = require('supertest');
 const server = require('../../server');
 const User = require('../../models/user');
 const Document = require('../../models/document');
-const Confirmation = require('../../models/confirmation');
 const expect = chai.expect;
+// const Confirmation = require('../../models/confirmation');
 
+var url = '/api/documents';
 var tokenUser1 = '';
 var tokenUser2 = '';
 var docId = '';
 
 describe('Documents router test !', function (done) {
-    this.timeout(15000);
-    var url = '/api/documents';
+    this.timeout(10000);
 
     // 회원 가입 후 로그인
     before((done) => {
-        var info = {
+        var user1 = {
             email: 'wwlee94@naver.com',
             password: 'password',
             passwordConfirm: 'password'
         };
-        new User(info).save()
+        new User(user1).save()
             .then(user => {
                 request(server).post('/api/auth/login')
                     .send({
-                        email: info.email,
-                        password: info.password
+                        email: user1.email,
+                        password: user1.password
                     })
                     .expect(200)
                     .end((err, res) => {

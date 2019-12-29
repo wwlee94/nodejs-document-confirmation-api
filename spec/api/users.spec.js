@@ -4,26 +4,27 @@ const server = require('../../server');
 const User = require('../../models/user');
 const expect = chai.expect;
 
+var url = '/api/users';
+var tokenUser1 = '';
+var tokenUser2 = '';
+
 describe('Users router test !', function (done) {
     this.timeout(10000);
-    var url = '/api/users';
-    var tokenUser1 = '';
-    var tokenUser2 = '';
 
     // 회원 가입 후 로그인
     before(done => {
-        var info = {
+        var user1 = {
             email: 'wwlee94@naver.com',
             password: 'password',
             passwordConfirm: 'password'
         };
-        new User(info).save()
+        new User(user1).save()
             .then(user => {
                 console.log('Save ValidUser !');
                 request(server).post('/api/auth/login')
                     .send({
-                        email: info.email,
-                        password: info.password
+                        email: user1.email,
+                        password: user1.password
                     })
                     .expect(200)
                     .end((err, res) => {

@@ -6,13 +6,13 @@ const Document = require('../../models/document');
 const Confirmation = require('../../models/confirmation');
 const expect = chai.expect;
 
+var url = '/api/confirmations';
 var tokenUser1 = '';
 var tokenUser2 = '';
 var docId = '';
 
 describe('Confirmations router test !', function (done) {
-    this.timeout(15000);
-    var url = '/api/confirmations';
+    this.timeout(10000);
 
     // 회원 가입 후 로그인
     before((done) => {
@@ -26,6 +26,7 @@ describe('Confirmations router test !', function (done) {
             password: 'password',
             passwordConfirm: 'password'
         };
+        //첫번째 유저 생성
         new User(user1).save()
             .then(user => {
                 request(server).post('/api/auth/login')
@@ -37,20 +38,21 @@ describe('Confirmations router test !', function (done) {
                     .end((err, res) => {
                         if (err) done(err);
                         tokenUser1 = res.body.data.token;
-                    });
-            });
-        new User(user2).save()
-            .then(user => {
-                request(server).post('/api/auth/login')
-                    .send({
-                        email: user2.email,
-                        password: user2.password
-                    })
-                    .expect(200)
-                    .end((err, res) => {
-                        if (err) done(err);
-                        tokenUser2 = res.body.data.token;
-                        done();
+                        //두번째 유저 생성
+                        new User(user2).save()
+                            .then(user => {
+                                request(server).post('/api/auth/login')
+                                    .send({
+                                        email: user2.email,
+                                        password: user2.password
+                                    })
+                                    .expect(200)
+                                    .end((err, res) => {
+                                        if (err) done(err);
+                                        tokenUser2 = res.body.data.token;
+                                        done();
+                                    });
+                            });
                     });
             });
         createDocuments();
@@ -141,7 +143,7 @@ describe('Confirmations router test !', function (done) {
                         .end((err, res) => {
                             if (err) done(err);
                             Document.find({ _id: docId })
-                                .then(doc => {                                
+                                .then(doc => {
                                     expect(res.body.status).to.be.equal(200);
                                     expect(doc).to.have.lengthOf(1);
                                     expect(doc[0].type).to.be.equal('CANCELED');
