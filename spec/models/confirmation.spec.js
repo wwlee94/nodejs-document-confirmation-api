@@ -1,19 +1,9 @@
 const chai = require('chai');
-const request = require('supertest');
-const server = require('../../server');
 const Confirmation = require('../../models/confirmation');
 const expect = chai.expect
 
 describe('Confirmation model test !', function (done) {
     this.timeout(10000);
-
-    before(() => {
-        request(server);
-    });
-
-    after(() => {
-        Confirmation.collection.drop();
-    });
 
     it('document reference id가 없다면 validation 에러를 발생시킨다.', done => {
         //1. 유효성 검사가 실패하도록 모델을 생성

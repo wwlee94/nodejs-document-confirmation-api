@@ -8,10 +8,12 @@ require('dotenv').config();
 var MONGO_DB_URL;
 var PORT;
 if(process.env.NODE_ENV === "test"){
+    console.log('NODE_ENV: test');
     MONGO_DB_URL = process.env.MONGO_TEST_DB_URL;
     PORT = process.env.TEST_PORT;
 }
 else{
+    console.log('NODE_ENV: development');
     MONGO_DB_URL = process.env.MONGO_DB_URL;
     PORT = process.env.PORT;
 }

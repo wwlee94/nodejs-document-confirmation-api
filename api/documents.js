@@ -45,7 +45,7 @@ function findDocuments(req, res, next) {
     else if (type && !typeList.includes(type)) return next(new Exception.InvalidParameterError("type은 ['OUTBOX', 'INBOX', 'ARCHIVE'] 중 하나를 가집니다."));
     else {
         console.error('default');
-        findDocumentsBy({ userEmail: req.query.email }, res);
+        findDocumentsBy({ userEmail: email }, res);
     }
 }
 

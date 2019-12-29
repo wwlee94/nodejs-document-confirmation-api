@@ -7,15 +7,15 @@ const Confirmation = require('../../models/confirmation');
 const expect = chai.expect;
 
 var url = '/api/confirmations';
-var tokenUser1 = '';
-var tokenUser2 = '';
+var wwlee94_Token = '';
+var dlfighk1028_Token = '';
 var docId = '';
 
 describe('Confirmations router test !', function (done) {
     this.timeout(10000);
 
     // 회원 가입 후 로그인
-    before((done) => {
+    before(done => {
         var user1 = {
             email: 'wwlee94@naver.com',
             password: 'password',
@@ -37,7 +37,7 @@ describe('Confirmations router test !', function (done) {
                     .expect(200)
                     .end((err, res) => {
                         if (err) done(err);
-                        tokenUser1 = res.body.data.token;
+                        wwlee94_Token = res.body.data.token;
                         //두번째 유저 생성
                         new User(user2).save()
                             .then(user => {
@@ -49,13 +49,12 @@ describe('Confirmations router test !', function (done) {
                                     .expect(200)
                                     .end((err, res) => {
                                         if (err) done(err);
-                                        tokenUser2 = res.body.data.token;
-                                        done();
+                                        dlfighk1028_Token = res.body.data.token;
                                     });
                             });
                     });
             });
-        createDocuments();
+        createDocuments(done);
     });
 
     after(() => {
@@ -67,7 +66,7 @@ describe('Confirmations router test !', function (done) {
     describe('POST / 요청은', () => {
         it('유효한 문서 ID가 아니면 "InvalidParameterError" 에러를 발생시킨다.', done => {
             request(server).post(url)
-                .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                 .send({
                     id: '5e07a0eb3d439a8bc1341142',
                     email: 'wwlee94@naver.com',
@@ -88,7 +87,7 @@ describe('Confirmations router test !', function (done) {
                 .then(doc => {
                     docId = doc._id;
                     request(server).post(url)
-                        .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                        .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                         .send({
                             id: doc._id,
                             email: 'wwlee94@naver.com',
@@ -110,7 +109,7 @@ describe('Confirmations router test !', function (done) {
                 .then(doc => {
                     docId = doc._id;
                     request(server).post(url)
-                        .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                        .set({ 'x-access-token': dlfighk1028_Token, Accept: 'application/json' })
                         .send({
                             id: docId,
                             email: 'dlfighk1028@naver.com',
@@ -132,7 +131,7 @@ describe('Confirmations router test !', function (done) {
                 .then(doc => {
                     docId = doc._id;
                     request(server).post(url)
-                        .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                        .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                         .send({
                             id: docId,
                             email: 'wwlee94@naver.com',
@@ -157,7 +156,7 @@ describe('Confirmations router test !', function (done) {
     describe('GET / 요청은', () => {
         it('에러가 없다면 자신이 결재 요청했던(생성했던) 문서 내역 검색', done => {
             request(server).get(url)
-                .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                 .query({
                     email: 'wwlee94@naver.com'
                 })
@@ -174,7 +173,7 @@ describe('Confirmations router test !', function (done) {
     });
 });
 
-function createDocuments() {
+function createDocuments(done) {
     var document1 = {
         userEmail: "wwlee94@naver.com",
         title: "첫번째 문서 입니다.",
@@ -203,12 +202,16 @@ function createDocuments() {
         content: "내용은 다음과 같습니다!",
         confirmationOrder: ["check@naver.com"]
     };
-    createDocument(document1);
-    createDocument(document2);
-    createDocument(document3);
-    createDocument(document4);
+    createDocument(document1)
+        .then(doc => createDocument(document2))
+        .then(doc => createDocument(document3))
+        .then(doc => {
+            createDocument(document4)
+            done();
+        });
 }
 
 function createDocument(document) {
-    new Document(document).save();
+    console.log(document.title);
+    return new Document(document).save();
 };

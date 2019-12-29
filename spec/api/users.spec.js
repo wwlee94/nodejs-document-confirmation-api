@@ -5,8 +5,8 @@ const User = require('../../models/user');
 const expect = chai.expect;
 
 var url = '/api/users';
-var tokenUser1 = '';
-var tokenUser2 = '';
+var wwlee94_Token = '';
+var newUser_Token = '';
 
 describe('Users router test !', function (done) {
     this.timeout(10000);
@@ -29,7 +29,7 @@ describe('Users router test !', function (done) {
                     .expect(200)
                     .end((err, res) => {
                         if (err) done(err);
-                        tokenUser1 = res.body.data.token;
+                        wwlee94_Token = res.body.data.token;
                         done();
                     });
             });
@@ -42,7 +42,7 @@ describe('Users router test !', function (done) {
     describe('GET / 요청은', () => {
         it('에러가 없다면 로그인 된 유저 정보를 반환한다.', done => {
             request(server).get(url)
-                .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                 .query({
                     email: 'wwlee94@naver.com'
                 })
@@ -58,7 +58,7 @@ describe('Users router test !', function (done) {
 
         it('email 파라미터가 없으면 "NotFoundParameterError" 에러를 발생시킨다.', done => {
             request(server).get(url)
-                .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })
+                .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })
                 .expect(400)
                 .end((err, res) => {
                     if (err) done(err);
@@ -115,14 +115,14 @@ describe('Users router test !', function (done) {
                 .expect(200)
                 .end((err, res) => {
                     if (err) done(err);
-                    tokenUser2 = res.body.data.token;
+                    newUser_Token = res.body.data.token;
                     done();
                 });
         });
 
         it('삭제하려는 계정이 없을 경우 "NotFoundDataError" 에러를 발생시킨다.', done => {
             request(server).delete(url)
-                .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                .set({ 'x-access-token': newUser_Token, Accept: 'application/json' })
                 .send({
                     email: 'notFoundUser@naver.com',
                     password: 'notFoundUser'
@@ -138,7 +138,7 @@ describe('Users router test !', function (done) {
 
         it('토큰의 정보와 삭제하려는 유저의 정보가 다르다면 "Forbidden" 에러를 발생시킨다.', done => {
             request(server).delete(url)
-                .set({ 'x-access-token': tokenUser1, Accept: 'application/json' })  //'wwlee94'계정의 토큰
+                .set({ 'x-access-token': wwlee94_Token, Accept: 'application/json' })  //'wwlee94'계정의 토큰
                 .send({
                     email: 'newUser@naver.com',
                     password: 'newUser'
@@ -154,7 +154,7 @@ describe('Users router test !', function (done) {
 
         it('에러가 없다면 요청한 계정을 삭제한다.', done => {
             request(server).delete(url)
-                .set({ 'x-access-token': tokenUser2, Accept: 'application/json' })
+                .set({ 'x-access-token': newUser_Token, Accept: 'application/json' })
                 .send({
                     email: 'newUser@naver.com',
                     password: 'newUser'
