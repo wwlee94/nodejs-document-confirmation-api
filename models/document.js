@@ -46,6 +46,7 @@ Document.index({ title: 1, userEmail: 1 }, { unique: true });
 
 // 결재 순서에서 현재 결재된 사용자를 뺀 리스트 반환하는 함수
 Document.methods.confirmationOrderFilter = function(){
+    confirmedUsers = this.confirmedUsers.map(x => x.userEmail);
     return this.confirmationOrder.filter(x => !this.confirmedUsers.includes(x));
 };
 
