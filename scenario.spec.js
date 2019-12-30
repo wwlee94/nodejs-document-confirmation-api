@@ -264,7 +264,7 @@ describe('문서 결재 시나리오: [ 회원가입 -> 로그인 -> 결재문�
     });
 
     describe('문서 상세 보기 API 호출 - GET /api/documents/:id', done => {
-        it('"첫번째 문서" 상세조회 - 내용, 생성일, 업데이트일, 누가 승인하고 취소 했는지(confirmedUsers)', done => {
+        it('"첫번째 문서" 상세조회 - 기본정보 + 내용, 생성일, 업데이트일, 누가 승인하고 취소 했는지(confirmedUsers)', done => {
             request(server).get(`${documentUrl}/${firstDocId}`)
                 .set({ 'x-access-token': newUser_Token, Accept: 'application/json' })
                 .expect(200)
@@ -274,7 +274,7 @@ describe('문서 결재 시나리오: [ 회원가입 -> 로그인 -> 결재문�
                     expect(res.body.data).include.all.keys(['_id', 'content', 'createdAt', 'updatedAt']);
                     expect(res.body.data.userEmail).to.be.equal('newUser@naver.com');
                     expect(res.body.data.type).to.be.equal('APPROVED');
-                    //결재자
+                    //결재자 정보
                     confirmUser = res.body.data.confirmedUsers[0];
                     expect(confirmUser.userEmail).to.be.equal('secondUser@naver.com');
                     expect(confirmUser.confirmation).to.be.equal('APPROVED');
@@ -282,17 +282,17 @@ describe('문서 결재 시나리오: [ 회원가입 -> 로그인 -> 결재문�
                 });
         });
 
-        it('"두번째 문서" 상세조회 - 내용, 생성일, 업데이트일, 누가 승인하고 취소 했는지(confirmedUsers)', done => {
+        it('"두번째 문서" 상세조회 - 기본정보 + 내용, 생성일, 업데이트일, 누가 승인하고 취소 했는지(confirmedUsers)', done => {
             request(server).get(`${documentUrl}/${secondDocId}`)
-                .set({ 'x-access-token': secondUser_Token, Accept: 'application/json' })
+                .set({ 'x-access-token': newUser_Token, Accept: 'application/json' })
                 .expect(200)
                 .end((err, res) => {
                     if (err) done(err);                    
                     expect(res.body.status).to.be.equal(200);                
                     expect(res.body.data).include.all.keys(['_id', 'content', 'createdAt', 'updatedAt']);
-                    expect(res.body.data.userEmail).to.be.equal('wwlee94@naver.com');
+                    expect(res.body.data.confirmationOrder).to.include('newUser@naver.com');
                     expect(res.body.data.type).to.be.equal('CANCELED');
-                    //결재자
+                    //결재자 정보
                     confirmUser = res.body.data.confirmedUsers[0];
                     expect(confirmUser.userEmail).to.be.equal('newUser@naver.com');
                     expect(confirmUser.confirmation).to.be.equal('CANCELED');
