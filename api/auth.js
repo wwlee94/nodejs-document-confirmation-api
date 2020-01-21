@@ -35,7 +35,10 @@ function signIn(req, res, next) {
     User.findOne({ email: req.body.email })
         .select({ email: 1, password: 1 })
         .then(user => {
-            if (!user || !user.authenticatePassword(req.body.password)) return next(new Exception.Forbidden('패스워드가 틀렸습니다. 다시 입력해주세요 !'));
+            if (!user) return next(new Exception.Forbidden('패스워드가 틀렸습니다. 다시 입력해주세요 !'));
+            else if (user) user.authenticatePassword(req.body.password).then(res => {
+                if (!res) return next(new Exception.Forbidden('패스워드가 틀렸습니다. 다시 입력해주세요 !'));
+            })
 
             var payload = {
                 _id: user._id,
