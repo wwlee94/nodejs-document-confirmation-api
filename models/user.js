@@ -1,5 +1,6 @@
 const Crypto = require('crypto');
 const Mongoose = require('mongoose');
+const Exception = require('../exceptions/exception');
 require('dotenv').config();
 
 // 스키마
@@ -43,6 +44,17 @@ User.path('password').validate(function (v) {
     }
 });
 
+// 해쉬 함수
+function hash(password) {
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) throw new Exception.ExceptionError(err.message)
+        bcrypt.hash(password, salt, (err, hash) => {
+            if (err) throw new Exception.ExceptionError(err.message)
+            return hash
+        });
+    });
+}
+
 // 세이브 전 패스워드 해시 암호화
 User.pre('save', function (next) {
     var user = this;
@@ -50,15 +62,26 @@ User.pre('save', function (next) {
     return next();
 });
 
-// 해쉬 함수
-function hash(password) {
-    return Crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
-}
-
 User.methods.authenticatePassword = function (password) {
     // 함수로 전달받은 password 의 해시값과, 데이터에 담겨있는 해시값과 비교를 합니다.
-    const hashed_password = hash(password);
-    return this.password === hashed_password;
+    bcrypt.compare(password, this.password, (err, res) => {
+        if (err) throw new Exception.ExceptionError(err.message)
+        else {
+            return res ? true : false
+        }
+    });
 };
+
+// 구 버전
+// // 해쉬 함수
+// function hash(password) {
+//     return Crypto.createHmac('sha256', process.env.HASH_SECRET_KEY).update(password).digest('hex');
+// }
+
+// User.methods.authenticatePassword = function (password) {
+//     // 함수로 전달받은 password 의 해시값과, 데이터에 담겨있는 해시값과 비교를 합니다.
+//     const hashed_password = hash(password);
+//     return this.password === hashed_password;
+// };
 
 module.exports = Mongoose.model('User', User);

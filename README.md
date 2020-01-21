@@ -17,7 +17,7 @@
     * 모든 결재자가 승인하면 문서가 승인됩니다. 한명이라도 거절하면 거절됩니다.
     * 문서 승인/거절시 의견을 추가할 수 있습니다.
 
-## 문서 전자 결재 API 사용법
+## 문서 전자 결재 API 서버 실행하기
 
 ### 1. Git repository를 로컬 저장소에 클론합니다.
 ```
@@ -39,7 +39,7 @@ npm install
 node server.js
 ```
 
-### 5. 테스트를 진행하려면? (spec/ 폴더, scenario.spec.js)
+### 5. 테스트를 진행하려면? (spec 폴더, scenario.spec.js)
 원하는 spec 파일을 아래의 명령어로 실행 시키면 됩니다.  
 ```
 npm test {path/to/spec} 
@@ -367,5 +367,10 @@ Content-Type: application/json
 | 422 Unprocessable Entity  | 유효하지 않은 요청일 경우 |
 | 500 Internal Server Error | 서버에 문제가 있을 경우 |
 
+
+## Version
+NVM - 0.30.2
+NPM - 6.7.0
+NodeJS - v11.11.0
 ## 문의 사항
 Email : wwlee9410@gmail.com 으로 연락주세요.

@@ -79,7 +79,7 @@ function findDocumentAndConfirmation(req, res, next) {
 function authenticateUserForShowDocument(doc, req, next) {
     authenticateUser = _.cloneDeep(doc.confirmationOrder);
     authenticateUser.push(doc.userEmail);
-    if (!authenticateUser.includes(req.user.email)) return next(new Exception.Forbidden('해당 문서의 세부 정보를 조회할 권한이 없습니다 !'));
+    if (!authenticateUser.includes(req.user.email)) throw new Exception.Forbidden('해당 문서의 세부 정보를 조회할 권한이 없습니다 !');
 }
 
 // 검증 후 결재 문서 생성하는 함수
