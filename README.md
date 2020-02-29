@@ -1,8 +1,7 @@
-2019.12 크로키닷컴 인턴 Online Test - Backend
+# 문서 결재 REST API
+## Document Apporval REST API
 
-# 문서 전자 결재 시스템
-## document-apporval
-
+### 제공되는 기능
 * 유저 토큰 시스템 (User, Auth)
     * 회원가입, 로그인 기능으로 Token을 발급 받은 유저만 문서 결재 API를 이용할 수 있습니다.
 * 문서 조회 기능 (Document)
@@ -21,12 +20,12 @@
 
 ### 1. Git repository를 로컬 저장소에 클론합니다.
 ```
-git clone https://github.com/croquiscom-recruit/201912_onlinetest_wwlee94.git
+git clone https://github.com/wwlee94/nodejs-document-approval-api.git
 ```
 
-### 2. 폴더로 이동합니다.
+### 2. Clone된 폴더로 이동합니다.
 ```
-cd 201912_onlinetest_wwlee94
+cd nodejs-document-approval-api
 ```
 
 ### 3. 의존성 패키지들을 다운로드 받습니다.
@@ -45,13 +44,11 @@ node server.js
 npm test {path/to/spec} 
 ```
 ```
-ex) 시나리오 스펙 테스트  
+ex) 시나리오 스펙 테스트: 전체적인 동작 과정을 스크립트로 구현한 파일로 이 파일은 각 테스트가 독립적이지 않습니다.
 npm test scenario.spec.js
 ```
 
-
 # API REFERENCE
-서브 기능보다 주요 기능에 대한 설명만 명세했습니다. 
 
 ## Auth API
 이메일과 패스워드로 로그인 시 유저 별로 토큰을 발급해주는 로그인 기능을 제공합니다.
@@ -369,8 +366,9 @@ Content-Type: application/json
 
 
 ## Version
-NVM - 0.30.2
-NPM - 6.7.0
+NVM - 0.30.2  
+NPM - 6.7.0  
 NodeJS - v11.11.0
+
 ## 문의 사항
 Email : wwlee9410@gmail.com 으로 연락주세요.
