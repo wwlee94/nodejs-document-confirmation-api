@@ -16,6 +16,9 @@
     * 모든 결재자가 승인하면 문서가 승인됩니다. 한명이라도 거절하면 거절됩니다.
     * 문서 승인/거절시 의견을 추가할 수 있습니다.
 
+### 사용한 모듈 스택 및 개념 정리
+* [모듈 스택 및 개념](https://github.com/wwlee94/nodejs-document-approval-api/blob/master/nodejs_study.md)
+
 ## 문서 전자 결재 API 서버 실행하기
 
 ### 1. Git repository를 로컬 저장소에 클론합니다.
