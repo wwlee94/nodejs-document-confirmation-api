@@ -17,7 +17,8 @@ post로 요청된 body를 쉽게 추출할 수 있는 모듈
 `app.use(bodyParser.urlencoded({extended: true}));`  
 body-parser를 쓰면 bodyParser.urlencoded()를 등록하면, 자동으로 req에 body속성이 추가되고 저장된다.  
 인코딩도 default로 UTF-8로 해준다. 이벤트등록할 필요 자체가 사라진다.  
-객체 안에 객체를 파싱할 수 있게하려면 extended: true  
+{extended: true}를 쓰면 내부적으로 qs 모듈 사용 -> qs.parse를 사용하므로, object를 상속받게 할 수 있다 -> 중첩된 객체표현 (객체 안에 객체를 파싱) 가능
+{extended: false}를 쓰면 내부적으로 query-string 모듈 사용 -> object 상속 불가
 
 ## NodeJS 프레임워크
 ### Express.js
