@@ -1,5 +1,5 @@
-# 문서 결재 REST API
-## Document Apporval REST API
+# 문서 컨펌 REST API
+## Document Confirmation REST API
 
 ### 제공되는 기능
 * 유저 토큰 시스템 (User, Auth)
@@ -17,18 +17,18 @@
     * 문서 승인/거절시 의견을 추가할 수 있습니다.
 
 ### 사용한 모듈 스택 및 개념 정리
-* [모듈 스택 및 개념](https://github.com/wwlee94/nodejs-document-approval-api/blob/master/nodejs_study.md)
+* [모듈 스택 및 개념](https://github.com/wwlee94/nodejs-document-confirmation-api/blob/master/nodejs_study.md)
 
 ## 문서 전자 결재 API 서버 실행하기
 
 ### 1. Git repository를 로컬 저장소에 클론합니다.
 ```
-git clone https://github.com/wwlee94/nodejs-document-approval-api.git
+git clone https://github.com/wwlee94/nodejs-document-confirmation-api.git
 ```
 
 ### 2. Clone된 폴더로 이동합니다.
 ```
-cd nodejs-document-approval-api
+cd nodejs-document-confirmation-api
 ```
 
 ### 3. 의존성 패키지들을 다운로드 받습니다.
