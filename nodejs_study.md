@@ -15,6 +15,8 @@ ES6를 사용하면 map, find, filter 등의 array functions가 제공되기 때
 post로 요청된 body를 쉽게 추출할 수 있는 모듈
 
 `app.use(bodyParser.urlencoded({extended: true}));`  
+body-parser를 쓰면 bodyParser.urlencoded()를 등록하면, 자동으로 req에 body속성이 추가되고 저장된다.  
+인코딩도 default로 UTF-8로 해준다. 이벤트등록할 필요 자체가 사라진다.  
 객체 안에 객체를 파싱할 수 있게하려면 extended: true  
 
 ## NodeJS 프레임워크
@@ -22,6 +24,8 @@ post로 요청된 body를 쉽게 추출할 수 있는 모듈
 Express.js는 Node.js의 핵심 모듈인 http와 Connect 컴포넌트를 기반으로 하는 웹 프레임워크임  
 그러한 컴포넌트를 미들웨어(middleware)라고 하며, 설정보다는 관례 (convention over configuration)와 같은 프레임워크의 철학을 지탱하는 주춧돌에 해당함  
 즉, 개발자들은 특정 프로젝트에 필요한 라이브러리를 어떤 것이든 자유롭게 선택할 수 있으며, 이는 개발자들에게 유연함과 수준 높은 맞춤식 구성을 보장함  
+
+미들웨어: 현재 작업을 마무리하고 다음 라우터로 넘김 -> next() -> But, next에 파라메터를 넣게 되는순간 무조건 에러로 간다.
 
 #### 이 외 사용안한 다른 프레임워크: Koa
 
